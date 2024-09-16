@@ -6,6 +6,13 @@ import config
 import utils
 import graphql
 
+# Find the project id for an organization project
+project_id = get_project_id(
+    owner=config.repository_owner, 
+    project_number=project_number,
+    is_repository=False
+)
+
 def notify_change_status():
     if config.is_enterprise:
         # Get the issues
