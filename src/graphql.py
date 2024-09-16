@@ -219,36 +219,6 @@ def get_project_issues(owner, owner_type, project_number, status_field_name, fil
         return []
 
 
-def add_issue_comment(issueId, comment):
-    mutation = """
-    mutation AddIssueComment($issueId: ID!, $comment: String!) {
-        addComment(input: {subjectId: $issueId, body: $comment}) {
-            clientMutationId
-        }
-    }
-    """
-
-    variables = {
-        'issueId': issueId,
-        'comment': comment
-    }
-
-    try:
-        response = requests.post(
-            config.api_endpoint,
-            json={"query": mutation, "variables": variables},
-            headers={"Authorization": f"Bearer {config.gh_token}"}
-        )
-        data = response.json()
-
-        if 'errors' in data:
-            logging.error(f"GraphQL mutation errors: {data['errors']}")
-
-        return data.get('data')
-
-    except requests.RequestException as e:
-        logging.error(f"Request error: {e}")
-        return {}
 
 def get_issue_comments(issue_id):
     query = """
