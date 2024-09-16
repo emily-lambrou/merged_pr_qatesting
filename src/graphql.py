@@ -184,18 +184,7 @@ def get_project_issues(owner, owner_type, project_number, status_field_name, fil
                     logging.debug(f"Filtering out issue ID {issue_id} with state {issue_content.get('state')}")
                     continue
        
-                # Check if status is "QA Testing"
-                if current_status == 'QA Testing':
-                    # Check if a comment already exists on the issue
-                    if not utils.check_comment_exists(issue_id, "This issue is ready for testing. Please proceed accordingly."):
-                        logging.debug(f"Adding issue ID {issue_id} as status is 'QA Testing'")
-                        # Add comment
-                        add_issue_comment(issue_id, "This issue is ready for testing. Please proceed accordingly.")
-                        logging.info(f"Comment added to issue {issue_id}")
-                        filtered_issues.append(node)
-                    else:
-                        logging.info(f"Comment already exists for issue {issue_id}")
-
+               
             # Update nodes with the filtered list
             nodes = filtered_issues
     
@@ -217,7 +206,6 @@ def get_project_issues(owner, owner_type, project_number, status_field_name, fil
     except requests.RequestException as e:
         logging.error(f"Request error: {e}")
         return []
-
 
 
 def get_issue_comments(issue_id):
@@ -351,6 +339,57 @@ def get_issue_timeline(issue_id):
     except requests.RequestException as e:
         logging.error(f"Request error: {e}")
         return []
+
+def update_issue_status_to_qa_testing(project_id, item_id, status_field_id, status_name="QA Testing"):
+    mutation = """
+    mutation UpdateIssueStatus($projectId: ID!, $itemId: ID!, $statusFieldId: ID!, $statusName: String!) {
+        updateProjectV2ItemFieldValue(input: {
+            projectId: $projectId,
+            itemId: $itemId,
+            fieldId: $statusFieldId,
+            value: { singleSelectOptionId: $statusName }
+        }) {
+            projectV2Item {
+                id
+            }
+        }
+    }
+    """
+
+    variables = {
+        'projectId': project_id,
+        'itemId': item_id,
+        'statusFieldId': status_field_id,
+        'statusName': status_name
+    }
+
+    try:
+        response = requests.post(
+            config.api_endpoint,
+            json={"query": mutation, "variables": variables},
+            headers={"Authorization": f"Bearer {config.gh_token}"}
+        )
+
+        data = response.json()
+
+        if 'errors' in data:
+            logging.error(f"GraphQL mutation errors: {data['errors']}")
+            return None
+
+        logging.info(f"Updated issue status to '{status_name}' for item ID: {item_id}")
+        return data.get('data')
+
+    except requests.RequestException as e:
+        logging.error(f"Request error: {e}")
+        return None
+
+
+
+
+
+
+
+
 
 
 
