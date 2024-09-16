@@ -310,3 +310,80 @@ def get_issue_comments(issue_id):
     except requests.RequestException as e:
         logging.error(f"Request error: {e}")
         return []
+
+
+def get_issue_timeline(issue_id):
+    query = """
+    query GetIssueTimeline($issueId: ID!, $afterCursor: String) {
+        node(id: $issueId) {
+            ... on Issue {
+                timelineItems(first: 100, after: $afterCursor) {
+                    nodes {
+                        __typename
+                        ... on CrossReferencedEvent {
+                            source {
+                                ... on PullRequest {
+                                    id
+                                    number
+                                    mergedAt
+                                    url
+                                }
+                            }
+                        }
+                    }
+                    pageInfo {
+                        endCursor
+                        hasNextPage
+                    }
+                }
+            }
+        }
+    }
+    """
+    
+    variables = {
+        'issueId': issue_id,
+        'afterCursor': None
+    }
+
+    all_timeline_items = []
+
+    try:
+        while True:
+            response = requests.post(
+                config.api_endpoint,
+                json={"query": query, "variables": variables},
+                headers={
+                    "Authorization": f"Bearer {GITHUB_TOKEN}",
+                    "Accept": "application/vnd.github.v4+json"
+                }
+            )
+
+            data = response.json()
+
+            if 'errors' in data:
+                logging.error(f"GraphQL query errors: {data['errors']}")
+                break
+
+            timeline_data = data.get('data', {}).get('node', {}).get('timelineItems', {})
+            timeline_items = timeline_data.get('nodes', [])
+            all_timeline_items.extend(timeline_items)
+
+            pageinfo = timeline_data.get('pageInfo', {})
+            if not pageinfo.get('hasNextPage'):
+                break
+
+            # Set the cursor for the next page
+            variables['afterCursor'] = pageinfo.get('endCursor')
+
+        return all_timeline_items
+
+    except requests.RequestException as e:
+        logging.error(f"Request error: {e}")
+        return []
+
+
+
+
+
+
