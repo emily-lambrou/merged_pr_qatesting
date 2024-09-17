@@ -1,4 +1,4 @@
-name: "QA Testing Status Notification"
+name: "Update status to QA Testing when a pull request is merged"
 description: "Notify when an issue's status changes to QA Testing"
 author: "Emily Lambrou"
 branding:
