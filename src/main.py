@@ -79,6 +79,11 @@ def notify_change_status():
         if current_status == 'QA Testing':
             continue # Skip this issue and move to the next since it is already in QA Testing, no need to update
         else:
+
+
+            # what is the status field id and the item id??
+
+            
             logger.info(f'Proceeding updating the status of {issue_title} , to QA Testing.')
             graphql.update_issue_status_to_qa_testing(
                 project_id = project_id,
