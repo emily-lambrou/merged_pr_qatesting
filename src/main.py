@@ -69,29 +69,29 @@ def notify_change_status():
             logger.warning(f'Project item does not contain "fieldValueByName": {project_item}')
             continue
 
-        current_status = project_item['fieldValueByName'].get('name')
-        if not current_status:
-            logger.warning(f'No status found in fieldValueByName for project item: {project_item}')
-            continue
+        issue_title = issue.get('title', 'Unknown Title')
 
+        status_name = "QA Testing"
+            
+        current_status = project_item['fieldValueByName'].get('name')
+        
         # Check if the current status is "QA Testing"
         if current_status == 'QA Testing':
-            # Prepare the comment text
-            comment_text = "This issue is ready for testing. Please proceed accordingly."
-            
-            # Check if the comment already exists
-            if not utils.check_comment_exists(issue_id, comment_text):
-                if config.notification_type == 'comment':
-                    comment = utils.prepare_issue_comment(
-                        issue=issue_content,
-                        assignees=issue_content.get('assignees', {}).get('nodes', []),
-                    )
+            continue # Skip this issue and move to the next since it is already in QA Testing, no need to update
+        else:
+            logger.info(f'Proceeding updating the status of {issue_title} , to QA Testing.')
+            graphql.update_issue_status_to_qa_testing(
+                project_id = project_id,
+                item_id = item_id,
+                status_field_id = config.status_field_id,
+                status_name=status_name
+            )
 
-                    if not config.dry_run:
-                        graphql.add_issue_comment(issue_id, comment)
-                    
-                    logger.info(f'Comment added to issue #{issue_content.get("number")} ({issue_id})')
-         
+            
+            
+
+            
+              
 
 def main():
     logger.info('Process started...')
