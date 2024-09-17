@@ -400,7 +400,7 @@ def get_issue_timeline(issue_id):
         logging.error(f"Request error: {e}")
         return []
 
-def update_issue_status_to_qa_testing(project_id, item_id, status_field_id, status_name="QA Testing"):
+def update_issue_status_to_qa_testing(project_id, item_id, status_field_id, status_name):
     mutation = """
     mutation UpdateIssueStatus($projectId: ID!, $itemId: ID!, $statusFieldId: ID!, $statusName: String!) {
         updateProjectV2ItemFieldValue(input: {
