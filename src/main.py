@@ -51,6 +51,8 @@ def notify_change_status():
             logger.warning(f'Issue object does not contain "content": {issue}')
             continue
 
+        issue_title = issue.get('title', 'Unknown Title')
+        
         # Ensure 'id' is present in issue content
         issue_id = issue_content.get('id')
         if not issue_id:
@@ -69,8 +71,6 @@ def notify_change_status():
             logger.warning(f'Project item does not contain "fieldValueByName": {project_item}')
             continue
 
-        issue_title = issue.get('title', 'Unknown Title')
-
         status_name = "QA Testing"
             
         current_status = project_item['fieldValueByName'].get('name')
@@ -87,7 +87,6 @@ def notify_change_status():
                 status_name=status_name
             )
 
-            
             
 
             
