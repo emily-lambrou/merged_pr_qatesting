@@ -86,16 +86,12 @@ def notify_change_status():
             
             logger.info(f'Proceeding updating the status of {issue_title} , to QA Testing.')
             graphql.update_issue_status_to_qa_testing(
-                project_id = project_id,
-                item_id = item_id,
-                status_field_id = config.status_field_id,
+                project_title=project_title,
+                item_id=item_id,
                 status_name=status_name
             )
 
-            
-
-            
-              
+                     
 
 def main():
     logger.info('Process started...')
