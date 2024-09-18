@@ -184,7 +184,6 @@ def get_project_issues(owner, owner_type, project_number, status_field_name, fil
                     logging.debug(f"Filtering out issue ID {issue_id} with state {issue_content.get('state')}")
                     continue
        
-               
             # Update nodes with the filtered list
             nodes = filtered_issues
     
@@ -207,6 +206,56 @@ def get_project_issues(owner, owner_type, project_number, status_field_name, fil
         logging.error(f"Request error: {e}")
         return []
 
+def get_project_id_by_title(org, project_title):
+    query = """
+    query($org: String!, $projectTitle: String!) {
+      organization(login: $org) {
+        projectsV2(first: 10, query: $projectTitle) {
+          nodes {
+            id
+            title
+          }
+        }
+      }
+    }
+    """
+    
+    variables = {
+        'owner': owner, 
+        'projectTitle': project_title
+    }
+
+    try:
+        response = requests.post(
+            config.api_endpoint,
+            json={"query": query, "variables": variables},
+            headers={"Authorization": f"Bearer {config.gh_token}"}
+        )
+    
+        data = response.json()
+
+        if 'errors' in data:
+            logging.error(f"GraphQL query errors: {data['errors']}")
+            return None
+
+            
+        projects = data['data']['organization']['projectsV2']['nodes']
+        for project in projects:
+            if project['title'] == project_title:
+                return project['id']
+        return None
+
+        if project_id:
+            logging.info(f"Found project ID: {project_id}")
+            return project_id
+        else:
+            logging.error("Project not found or does not have the specified number.")
+            return None
+
+    except requests.RequestException as e:
+        logging.error(f"Request error: {e}")
+        return None
+        
 
 def get_issue_comments(issue_id):
     query = """
@@ -270,65 +319,6 @@ def get_issue_comments(issue_id):
         return []
 
 
-
-def get_project_id(owner, project_number, is_repository=True, repo=None):
-    if is_repository:
-        query = """
-        query GetProjectIdByNumber($owner: String!, $repo: String!, $projectNumber: Int!) {
-          repository(owner: $owner, name: $repo) {
-            projectV2(number: $projectNumber) {
-              id
-            }
-          }
-        }
-        """
-        variables = {
-            'owner': owner,
-            'repo': repo,
-            'projectNumber': project_number
-        }
-    else:
-        query = """
-        query GetProjectIdByNumber($owner: String!, $projectNumber: Int!) {
-          organization(login: $owner) {
-            projectV2(number: $projectNumber) {
-              id
-            }
-          }
-        }
-        """
-        variables = {
-            'owner': owner,
-            'projectNumber': project_number
-        }
-
-    try:
-        response = requests.post(
-            config.api_endpoint,
-            json={"query": query, "variables": variables},
-            headers={"Authorization": f"Bearer {config.gh_token}"}
-        )
-        
-        data = response.json()
-
-        if 'errors' in data:
-            logging.error(f"GraphQL query errors: {data['errors']}")
-            return None
-
-        project_data = data.get('data', {}).get('repository' if is_repository else 'user', {}).get('projectV2', {})
-        project_id = project_data.get('id')
-
-        if project_id:
-            logging.info(f"Found project ID: {project_id}")
-            return project_id
-        else:
-            logging.error("Project not found or does not have the specified number.")
-            return None
-
-    except requests.RequestException as e:
-        logging.error(f"Request error: {e}")
-        return None
-        
 
 def get_issue_timeline(issue_id):
     query = """
