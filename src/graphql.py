@@ -260,13 +260,24 @@ def get_status_field_id(project_id, status_field_name):
                 id
                 name
               }
+              ... on ProjectV2DateField {
+                id
+                name
+              }
+              ... on ProjectV2TextField {
+                id
+                name
+              }
+              ... on ProjectV2IterationField {
+                id
+                name
+              }
             }
           }
         }
       }
     }
     """
-    
     variables = {
         'projectId': project_id
     }
@@ -285,22 +296,30 @@ def get_status_field_id(project_id, status_field_name):
             logging.error(f"GraphQL query errors: {data['errors']}")
             return None
         
-        # Check if 'data' is in the response
-        if 'data' not in data or not data['data']:
+        # Ensure 'data' is in the response and is valid
+        if 'data' not in data or 'node' not in data['data'] or 'fields' not in data['data']['node'] or 'nodes' not in data['data']['node']['fields']:
             logging.error(f"Unexpected response structure: {data}")
             return None
         
+        # Log the response for debugging
+        logging.debug(f"GraphQL response: {data}")
+
         fields = data['data']['node']['fields']['nodes']
         
         for field in fields:
-            if field['name'] == status_field_name:
+            # Log each field for debugging
+            logging.debug(f"Field: {field}")
+            
+            # Check for 'name' in field and match it with status_field_name
+            if 'name' in field and field['name'] == status_field_name:
                 return field['id']
+        
+        logging.warning(f"Status field '{status_field_name}' not found.")
         return None
 
     except requests.RequestException as e:
         logging.error(f"Request error: {e}")
         return None
-
 
 
 def get_item_id_by_issue_id(project_id, issue_id):
