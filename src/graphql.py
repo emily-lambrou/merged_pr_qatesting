@@ -443,10 +443,12 @@ def update_issue_status_to_qa_testing(owner, project_title, item_id, status_name
         logging.error(f"Project '{project_title}' not found.")
         return None
 
-    status_field_id = get_status_field_id(project_id)
+    status_field_id = get_status_field_id(project_id, config.status_field_name)
     if not status_field_id:
         logging.error(f"Status field not found in project '{project_title}'.")
         return None
+
+    item_id = 
 
     mutation = """
     mutation UpdateIssueStatus($projectId: ID!, $itemId: ID!, $statusFieldId: ID!, $statusName: String!) {
