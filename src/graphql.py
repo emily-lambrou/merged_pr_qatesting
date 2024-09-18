@@ -206,10 +206,10 @@ def get_project_issues(owner, owner_type, project_number, status_field_name, fil
         logging.error(f"Request error: {e}")
         return []
 
-def get_project_id_by_title(org, project_title):
+def get_project_id_by_title(owner, project_title):
     query = """
-    query($org: String!, $projectTitle: String!) {
-      organization(login: $org) {
+    query($owner: String!, $projectTitle: String!) {
+      organization(login: $owner) {
         projectsV2(first: 10, query: $projectTitle) {
           nodes {
             id
