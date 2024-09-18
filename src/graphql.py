@@ -390,7 +390,17 @@ def get_issue_timeline(issue_id):
         logging.error(f"Request error: {e}")
         return []
 
-def update_issue_status_to_qa_testing(project_id, item_id, status_field_id, status_name):
+def update_issue_status_to_qa_testing(owner, project_title, item_id, status_name):
+    project_id = get_project_id_by_title(owner, project_title)
+    if not project_id:
+        logging.error(f"Project '{project_title}' not found.")
+        return None
+
+    status_field_id = get_status_field_id(project_id)
+    if not status_field_id:
+        logging.error(f"Status field not found in project '{project_title}'.")
+        return None
+
     mutation = """
     mutation UpdateIssueStatus($projectId: ID!, $itemId: ID!, $statusFieldId: ID!, $statusName: String!) {
         updateProjectV2ItemFieldValue(input: {
@@ -405,7 +415,6 @@ def update_issue_status_to_qa_testing(project_id, item_id, status_field_id, stat
         }
     }
     """
-
     variables = {
         'projectId': project_id,
         'itemId': item_id,
@@ -419,19 +428,14 @@ def update_issue_status_to_qa_testing(project_id, item_id, status_field_id, stat
             json={"query": mutation, "variables": variables},
             headers={"Authorization": f"Bearer {config.gh_token}"}
         )
-
         data = response.json()
-
         if 'errors' in data:
             logging.error(f"GraphQL mutation errors: {data['errors']}")
             return None
-
         logging.info(f"Updated issue status to '{status_name}' for item ID: {item_id}")
         return data.get('data')
-
     except requests.RequestException as e:
         logging.error(f"Request error: {e}")
         return None
-
 
 
