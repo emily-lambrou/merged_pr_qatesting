@@ -91,7 +91,8 @@ def notify_change_status(project_id,status_field_id):
 
         item_id = get_item_id_by_issue_id(
             project_id=project_id,
-            issue_id=issue['id'] 
+            issue_id=issue_id
+        )
         
         if not item_id:
             logging.error(f"Item id not found in project {project_title}.")
