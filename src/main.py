@@ -9,7 +9,6 @@ import graphql
 # General variables to run only once to get the project_id and status_field_id
 # -----------------------------------------------------------------------------
 
-# Find the project id for an organization project
 project_id = graphql.get_project_id_by_title(
     owner=config.repository_owner, 
     project_title=project_title
@@ -108,14 +107,14 @@ def notify_change_status(project_id,status_field_id):
             # Check if the PR is merged from the issue timelines
             has_merged_pr = graphql.get_issue_has_merged_pr(issue_id)
             if has_merged_pr:  
-                logger.info(f'Proceeding updating the status of {issue_title} , to QA Testing as the issue {issue_title} contains a merged PR.')
+                logger.info(f'Proceeding updating the status of {issue_title}, to QA Testing as the issue {issue_title} contains a merged PR.')
                 graphql.update_issue_status_to_qa_testing(
                     owner=config.repository_owner,
                     project_title=project_title,
                     item_id=item_id,
                     status_name=status_name
                 )
-
+                
 def main():
     logger.info('Process started...')
     if config.dry_run:
