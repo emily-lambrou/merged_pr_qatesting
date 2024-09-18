@@ -11,7 +11,7 @@ import graphql
 # -----------------------------------------------------------------------------
 
 # Find the project id for an organization project
-project_id = get_project_id_by_title(
+project_id = graphql.get_project_id_by_title(
     owner=config.repository_owner, 
     project_title=project_title
 )
@@ -20,7 +20,7 @@ if not project_id:
     logging.error(f"Project {project_title} not found.")
     return None
 
-status_field_id = get_status_field_id(
+status_field_id = graphql.get_status_field_id(
     project_id=project_id,
     status_field_name=config.status_field_name
 )
@@ -107,7 +107,7 @@ def notify_change_status(project_id,status_field_id):
             continue # Skip this issue and move to the next since it is already in QA Testing, no need to update
         else:
             # Check if the PR is merged from the issue timelines
-            has_merged_pr = get_issue_has_merged_pr(issue_id)
+            has_merged_pr = graphql.get_issue_has_merged_pr(issue_id)
             if has_merged_pr:  
                 logger.info(f'Proceeding updating the status of {issue_title} , to QA Testing as the issue {issue_title} contains a merged PR.')
                 graphql.update_issue_status_to_qa_testing(
