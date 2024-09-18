@@ -302,8 +302,58 @@ def get_status_field_id(project_id, status_field_name):
         logging.error(f"Request error: {e}")
         return None
 
-        
 
+def get_item_id_by_issue_id(project_id, issue_id):
+    query = """
+    query($projectId: ID!) {
+      node(id: $projectId) {
+        ... on ProjectV2 {
+          items(first: 100) {
+            nodes {
+              id
+              content {
+                ... on Issue {
+                  id
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    """
+    variables = {
+        "projectId": project_id
+    }
+    
+    try:
+        response = requests.post(
+            config.api_endpoint,
+            json={"query": query, "variables": variables},
+            headers={"Authorization": f"Bearer {config.gh_token}"}
+        )
+        
+        data = response.json()
+        project_items = data['data']['node']['items']['nodes']
+        
+        # Find the project-specific `item_id` that matches the `issue_id`
+        for item in project_items:
+            if item['content'] and item['content']['id'] == issue_id:
+                item_id = item['id']
+                return item_id
+        return None
+
+        if item_id:
+            logging.info(f"Item ID: {item_id}")
+            return item_id
+        else:
+            logging.error("Item ID not found.")
+            return None
+        
+    except requests.RequestException as e:
+        logging.error(f"Request error: {e}")
+        return None
+        
 def get_issue_comments(issue_id):
     query = """
     query GetIssueComments($issueId: ID!, $afterCursor: String) {
@@ -440,15 +490,18 @@ def get_issue_timeline(issue_id):
 def update_issue_status_to_qa_testing(owner, project_title, item_id, status_name):
     project_id = get_project_id_by_title(owner, project_title)
     if not project_id:
-        logging.error(f"Project '{project_title}' not found.")
+        logging.error(f"Project {project_title} not found.")
         return None
 
     status_field_id = get_status_field_id(project_id, config.status_field_name)
     if not status_field_id:
-        logging.error(f"Status field not found in project '{project_title}'.")
+        logging.error(f"Status field not found in project {project_title}.")
         return None
 
-    item_id = 
+    item_id = get_item_id_by_issue_title(project_id, issue_id)  
+    if not item_id:
+        logging.error(f"Item id not found in project {project_title}.")
+        return None
 
     mutation = """
     mutation UpdateIssueStatus($projectId: ID!, $itemId: ID!, $statusFieldId: ID!, $statusName: String!) {
@@ -486,5 +539,3 @@ def update_issue_status_to_qa_testing(owner, project_title, item_id, status_name
     except requests.RequestException as e:
         logging.error(f"Request error: {e}")
         return None
-
-
