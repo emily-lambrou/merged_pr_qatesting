@@ -2,7 +2,6 @@ from pprint import pprint
 import logging
 import requests
 import config
-import utils
 
 logging.basicConfig(level=logging.DEBUG)  # Ensure logging is set up
 
