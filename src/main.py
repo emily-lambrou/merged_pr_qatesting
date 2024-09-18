@@ -6,13 +6,32 @@ import config
 import utils
 import graphql
 
+# -----------------------------------------------------------------------------
+# General variables to run only once to get the project_id and status_field_id
+# -----------------------------------------------------------------------------
+
 # Find the project id for an organization project
 project_id = get_project_id_by_title(
     owner=config.repository_owner, 
     project_title=project_title
 )
 
-def notify_change_status():
+if not project_id:
+    logging.error(f"Project {project_title} not found.")
+    return None
+
+status_field_id = get_status_field_id(
+    project_id=project_id,
+    status_field_name=config.status_field_name
+)
+
+if not status_field_id:
+    logging.error(f"Status field not found in project {project_title}.")
+    return None
+
+# -----------------------------------------------------------------------------
+
+def notify_change_status(project_id,status_field_id):
     if config.is_enterprise:
         # Get the issues
         issues = graphql.get_project_issues(
@@ -70,6 +89,14 @@ def notify_change_status():
             logger.warning(f'Project item does not contain "fieldValueByName": {project_item}')
             continue
 
+        item_id = get_item_id_by_issue_id(
+            project_id=project_id,
+            issue_id=issue['id'] 
+        
+        if not item_id:
+            logging.error(f"Item id not found in project {project_title}.")
+            return None
+
         status_name = "QA Testing"
             
         current_status = project_item['fieldValueByName'].get('name')
@@ -78,11 +105,6 @@ def notify_change_status():
         if current_status == 'QA Testing':
             continue # Skip this issue and move to the next since it is already in QA Testing, no need to update
         else:
-
-
-            # what is the status field id and the item id??
-
-            
             logger.info(f'Proceeding updating the status of {issue_title} , to QA Testing.')
             graphql.update_issue_status_to_qa_testing(
                 owner=config.repository_owner,
@@ -91,14 +113,12 @@ def notify_change_status():
                 status_name=status_name
             )
 
-                     
-
 def main():
     logger.info('Process started...')
     if config.dry_run:
         logger.info('DRY RUN MODE ON!')
 
-    notify_change_status()
+    notify_change_status(project_id,status_field_id)
 
 if __name__ == "__main__":
     main()
