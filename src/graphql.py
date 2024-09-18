@@ -498,7 +498,7 @@ def update_issue_status_to_qa_testing(owner, project_title, item_id, status_name
         logging.error(f"Status field not found in project {project_title}.")
         return None
 
-    item_id = get_item_id_by_issue_title(project_id, issue_id)  
+    item_id = get_item_id_by_issue_id(project_id, issue_id)  
     if not item_id:
         logging.error(f"Item id not found in project {project_title}.")
         return None
