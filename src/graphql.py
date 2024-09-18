@@ -354,7 +354,7 @@ def get_item_id_by_issue_id(project_id, issue_id):
         logging.error(f"Request error: {e}")
         return None
         
-def get_issue_timeline(issue_id):
+def get_issue_has_merged_pr(issue_id):
     query = """
     query GetIssueTimeline($issueId: ID!, $afterCursor: String) {
         node(id: $issueId) {
@@ -388,15 +388,13 @@ def get_issue_timeline(issue_id):
         'afterCursor': None
     }
 
-    all_timeline_items = []
-
     try:
         while True:
             response = requests.post(
                 config.api_endpoint,
                 json={"query": query, "variables": variables},
                 headers={
-                    "Authorization": f"Bearer {GITHUB_TOKEN}",
+                    "Authorization": f"Bearer {config.gh_token}",
                     "Accept": "application/vnd.github.v4+json"
                 }
             )
@@ -409,7 +407,13 @@ def get_issue_timeline(issue_id):
 
             timeline_data = data.get('data', {}).get('node', {}).get('timelineItems', {})
             timeline_items = timeline_data.get('nodes', [])
-            all_timeline_items.extend(timeline_items)
+
+            # Check each timeline item for a merged pull request
+            for item in timeline_items:
+                if item['__typename'] == 'CrossReferencedEvent':
+                    pr = item.get('source', {})
+                    if pr.get('mergedAt'):
+                        return True  # A merged pull request was found
 
             pageinfo = timeline_data.get('pageInfo', {})
             if not pageinfo.get('hasNextPage'):
@@ -418,11 +422,12 @@ def get_issue_timeline(issue_id):
             # Set the cursor for the next page
             variables['afterCursor'] = pageinfo.get('endCursor')
 
-        return all_timeline_items
+        # No merged pull request found in the timeline
+        return False
 
     except requests.RequestException as e:
         logging.error(f"Request error: {e}")
-        return []
+        return False
 
 def update_issue_status_to_qa_testing(owner, project_title, item_id, status_name):
     project_id = get_project_id_by_title(owner, project_title)
