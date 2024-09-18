@@ -10,6 +10,7 @@ dry_run = True if os.environ.get('INPUT_DRY_RUN') == 'True' else False
 
 gh_token = os.environ['INPUT_GH_TOKEN']
 project_number = int(os.environ['INPUT_PROJECT_NUMBER'])
+project_title = int(os.environ['INPUT_PROJECT_TITLE'])
 api_endpoint = os.environ.get('GITHUB_GRAPHQL_URL', 'https://github.intranet.unicaf.org/api/graphql')
 status_field_name = os.environ['INPUT_STATUS_FIELD_NAME']
 notification_type = os.environ['INPUT_NOTIFICATION_TYPE']
