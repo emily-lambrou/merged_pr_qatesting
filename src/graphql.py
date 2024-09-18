@@ -259,18 +259,12 @@ def get_status_field_id(project_id, status_field_name):
               ... on ProjectV2SingleSelectField {
                 id
                 name
-              }
-              ... on ProjectV2DateField {
-                id
-                name
-              }
-              ... on ProjectV2TextField {
-                id
-                name
-              }
-              ... on ProjectV2IterationField {
-                id
-                name
+                options {
+                  nodes {
+                    id
+                    name
+                  }
+                }
               }
             }
           }
@@ -278,6 +272,7 @@ def get_status_field_id(project_id, status_field_name):
       }
     }
     """
+    
     variables = {
         'projectId': project_id
     }
