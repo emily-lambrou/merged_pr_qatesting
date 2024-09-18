@@ -240,16 +240,10 @@ def get_project_id_by_title(owner, project_title):
         projects = data['data']['organization']['projectsV2']['nodes']
         for project in projects:
             if project['title'] == project_title:
-                project_id = project['id']
                 return project['id']
         return None
 
-        if project_id:
-            logging.info(f"Found project ID: {project_id}")
-            return project_id
-        else:
-            logging.error("Project not found or does not have the specified number.")
-            return None
+       
 
     except requests.RequestException as e:
         logging.error(f"Request error: {e}")
@@ -282,20 +276,23 @@ def get_status_field_id(project_id, status_field_name):
         )
         
         data = response.json()
+        
+        # Check for errors in the response
+        if 'errors' in data:
+            logging.error(f"GraphQL query errors: {data['errors']}")
+            return None
+        
+        # Check if 'data' is in the response
+        if 'data' not in data or not data['data']:
+            logging.error(f"Unexpected response structure: {data}")
+            return None
+        
         fields = data['data']['node']['fields']['nodes']
         
         for field in fields:
             if field['name'] == status_field_name:
-                field_id = field['id']
-                return field_id
+                return field['id']
         return None
-    
-        if field_id:
-            logging.info(f"Found field ID: {field_id}")
-            return field_id
-        else:
-            logging.error("Field id not found.")
-            return None
 
     except requests.RequestException as e:
         logging.error(f"Request error: {e}")
@@ -338,16 +335,9 @@ def get_item_id_by_issue_id(project_id, issue_id):
         # Find the project-specific `item_id` that matches the `issue_id`
         for item in project_items:
             if item['content'] and item['content']['id'] == issue_id:
-                item_id = item['id']
-                return item_id
+                return item['id']
         return None
 
-        if item_id:
-            logging.info(f"Item ID: {item_id}")
-            return item_id
-        else:
-            logging.error("Item ID not found.")
-            return None
         
     except requests.RequestException as e:
         logging.error(f"Request error: {e}")
