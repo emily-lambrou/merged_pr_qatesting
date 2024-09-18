@@ -238,10 +238,10 @@ def get_project_id_by_title(owner, project_title):
             logging.error(f"GraphQL query errors: {data['errors']}")
             return None
 
-            
         projects = data['data']['organization']['projectsV2']['nodes']
         for project in projects:
             if project['title'] == project_title:
+                project_id = project['id']
                 return project['id']
         return None
 
@@ -255,6 +255,53 @@ def get_project_id_by_title(owner, project_title):
     except requests.RequestException as e:
         logging.error(f"Request error: {e}")
         return None
+
+def get_status_field_id(project_id, status_field_name):
+    query = """
+    query($projectId: ID!) {
+      node(id: $projectId) {
+        ... on ProjectV2 {
+          fields(first: 20) {
+            nodes {
+              id
+              name
+            }
+          }
+        }
+      }
+    }
+    """
+    variables = {
+        'projectId': project_id
+    }
+
+    try:
+        response = requests.post(
+            config.api_endpoint,
+            json={"query": query, "variables": variables},
+            headers={"Authorization": f"Bearer {config.gh_token}"}
+        )
+        
+        data = response.json()
+        fields = data['data']['node']['fields']['nodes']
+        
+        for field in fields:
+            if field['name'] == status_field_name:
+                field_id = field['id']
+                return field_id
+        return None
+    
+        if field_id:
+            logging.info(f"Found field ID: {field_id}")
+            return field_id
+        else:
+            logging.error("Field id not found.")
+            return None
+
+    except requests.RequestException as e:
+        logging.error(f"Request error: {e}")
+        return None
+
         
 
 def get_issue_comments(issue_id):
