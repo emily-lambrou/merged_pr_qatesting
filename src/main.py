@@ -7,10 +7,9 @@ import utils
 import graphql
 
 # Find the project id for an organization project
-project_id = get_project_id(
+project_id = get_project_id_by_title(
     owner=config.repository_owner, 
-    project_number=project_number,
-    is_repository=False
+    project_title=project_title
 )
 
 def notify_change_status():
