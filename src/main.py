@@ -5,30 +5,6 @@ import requests
 import config
 import graphql
 
-# -----------------------------------------------------------------------------
-# General variables to run only once to get the project_id and status_field_id
-# -----------------------------------------------------------------------------
-
-project_id = graphql.get_project_id_by_title(
-    owner=config.repository_owner, 
-    project_title=project_title
-)
-
-if not project_id:
-    logging.error(f"Project {project_title} not found.")
-    return None
-
-status_field_id = graphql.get_status_field_id(
-    project_id=project_id,
-    status_field_name=config.status_field_name
-)
-
-if not status_field_id:
-    logging.error(f"Status field not found in project {project_title}.")
-    return None
-
-# -----------------------------------------------------------------------------
-
 def notify_change_status(project_id,status_field_id):
     if config.is_enterprise:
         # Get the issues
@@ -119,6 +95,30 @@ def main():
     logger.info('Process started...')
     if config.dry_run:
         logger.info('DRY RUN MODE ON!')
+
+    # -----------------------------------------------------------------------------
+    # General variables to run only once to get the project_id and status_field_id
+    # -----------------------------------------------------------------------------
+
+    project_id = graphql.get_project_id_by_title(
+        owner=config.repository_owner, 
+        project_title=project_title
+    )
+    
+    if not project_id:
+        logging.error(f"Project {project_title} not found.")
+        return None
+    
+    status_field_id = graphql.get_status_field_id(
+        project_id=project_id,
+        status_field_name=config.status_field_name
+    )
+    
+    if not status_field_id:
+        logging.error(f"Status field not found in project {project_title}.")
+        return None
+    
+    # -----------------------------------------------------------------------------
 
     notify_change_status(project_id,status_field_id)
 
