@@ -256,14 +256,17 @@ def get_status_field_id(project_id, status_field_name):
         ... on ProjectV2 {
           fields(first: 20) {
             nodes {
-              id
-              name
+              ... on ProjectV2SingleSelectField {
+                id
+                name
+              }
             }
           }
         }
       }
     }
     """
+    
     variables = {
         'projectId': project_id
     }
@@ -297,6 +300,7 @@ def get_status_field_id(project_id, status_field_name):
     except requests.RequestException as e:
         logging.error(f"Request error: {e}")
         return None
+
 
 
 def get_item_id_by_issue_id(project_id, issue_id):
