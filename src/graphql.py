@@ -249,16 +249,24 @@ def get_project_id_by_title(owner, project_title):
         logging.error(f"Request error: {e}")
         return None
 
+import requests
+import logging
+
 def get_status_field_id(project_id, status_field_name):
     query = """
     query($projectId: ID!) {
       node(id: $projectId) {
         ... on ProjectV2 {
-          fields(first: 1) {
+          fields(first: 100) {
             nodes {
+              __typename
               ... on ProjectV2SingleSelectField {
                 id
                 name
+                options {
+                  id
+                  name
+                }
               }
             }
           }
@@ -278,24 +286,25 @@ def get_status_field_id(project_id, status_field_name):
         )
         
         data = response.json()
-        
+
         # Check for errors in the response
         if 'errors' in data:
             logging.error(f"GraphQL query errors: {data['errors']}")
             return None
         
         # Ensure 'data' is in the response and is valid
-        if 'data' not in data or 'node' not in data['data'] or 'fields' not in data['data']['node'] or 'nodes' not in data['data']['node']['fields']:
+        if 'data' not in data or 'node' not in data['data'] or 'fields' not in data['data']['node']:
             logging.error(f"Unexpected response structure: {data}")
             return None
         
         # Log the response for debugging
         logging.debug(f"GraphQL response: {data}")
 
-        # Get the first field from the response
+        # Get fields from the response
         fields = data['data']['node']['fields']['nodes']
-        if fields and fields[0].get('name') == status_field_name:
-            return fields[0]['id']
+        for field in fields:
+            if field.get('name') == status_field_name and field['__typename'] == 'ProjectV2SingleSelectField':
+                return field['id']
         
         logging.warning(f"Status field '{status_field_name}' not found.")
         return None
@@ -303,6 +312,7 @@ def get_status_field_id(project_id, status_field_name):
     except requests.RequestException as e:
         logging.error(f"Request error: {e}")
         return None
+
 
 def get_item_id_by_issue_id(project_id, issue_id):
     query = """
