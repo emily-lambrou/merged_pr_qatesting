@@ -254,17 +254,11 @@ def get_status_field_id(project_id, status_field_name):
     query($projectId: ID!) {
       node(id: $projectId) {
         ... on ProjectV2 {
-          fields(first: 20) {
+          fields(first: 1) {
             nodes {
               ... on ProjectV2SingleSelectField {
                 id
                 name
-                options {
-                  nodes {
-                    id
-                    name
-                  }
-                }
               }
             }
           }
@@ -272,7 +266,6 @@ def get_status_field_id(project_id, status_field_name):
       }
     }
     """
-    
     variables = {
         'projectId': project_id
     }
@@ -299,15 +292,10 @@ def get_status_field_id(project_id, status_field_name):
         # Log the response for debugging
         logging.debug(f"GraphQL response: {data}")
 
+        # Get the first field from the response
         fields = data['data']['node']['fields']['nodes']
-        
-        for field in fields:
-            # Log each field for debugging
-            logging.debug(f"Field: {field}")
-            
-            # Check for 'name' in field and match it with status_field_name
-            if 'name' in field and field['name'] == status_field_name:
-                return field['id']
+        if fields and fields[0].get('name') == status_field_name:
+            return fields[0]['id']
         
         logging.warning(f"Status field '{status_field_name}' not found.")
         return None
@@ -315,7 +303,6 @@ def get_status_field_id(project_id, status_field_name):
     except requests.RequestException as e:
         logging.error(f"Request error: {e}")
         return None
-
 
 def get_item_id_by_issue_id(project_id, issue_id):
     query = """
