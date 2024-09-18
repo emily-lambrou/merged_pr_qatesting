@@ -1,4 +1,5 @@
 from logger import logger
+import logging
 import json
 import os
 import requests
