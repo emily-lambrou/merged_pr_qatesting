@@ -81,16 +81,19 @@ def notify_change_status(project_id,status_field_id):
         if current_status == 'QA Testing':
             continue # Skip this issue and move to the next since it is already in QA Testing, no need to update
         else:
-            # Check if the PR is merged from the issue timelines
-            has_merged_pr = graphql.get_issue_has_merged_pr(issue_id)
-            if has_merged_pr:  
-                logger.info(f'Proceeding updating the status of {issue_title}, to QA Testing as the issue {issue_title} contains a merged PR.')
-                graphql.update_issue_status_to_qa_testing(
-                    owner=config.repository_owner,
-                    project_title=project_title,
-                    item_id=item_id,
-                    status_name=status_name
-                )
+            
+            if not config.dry_run: # if True then enable the functionality to update the status
+                
+                # Check if the PR is merged from the issue timelines
+                has_merged_pr = graphql.get_issue_has_merged_pr(issue_id)
+                if has_merged_pr:  
+                    logger.info(f'Proceeding updating the status of {issue_title}, to QA Testing as the issue {issue_title} contains a merged PR.')
+                    graphql.update_issue_status_to_qa_testing(
+                        owner=config.repository_owner,
+                        project_title=project_title,
+                        item_id=item_id,
+                        status_name=status_name
+                    )
                 
 def main():
     logger.info('Process started...')
