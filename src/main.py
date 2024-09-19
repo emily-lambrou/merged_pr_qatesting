@@ -108,7 +108,7 @@ def notify_change_status():
         # This is the id of the "QA Testing" status getting it from this line:
         #  print("Issue object: ", json.dumps(issue, indent=4))
         
-        status_option_id = "MDU6SXNzdWUyNTU0NQ==" 
+        status_option_id = "MDM1OlByb2plY3RWMkl0ZW1GaWVsZFNpbmdsZVNlbGVjdFZhbHVlOTY2MTE=" 
         
         # Check if the current status is "QA Testing"
         if current_status == 'QA Testing':
