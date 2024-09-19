@@ -182,7 +182,23 @@ def get_project_issues(owner, owner_type, project_number, status_field_name, fil
                 if filters.get('open_only') and issue_content.get('state') != 'OPEN':
                     logging.debug(f"Filtering out issue ID {issue_id} with state {issue_content.get('state')}")
                     continue
-       
+
+                status_name = "QA Testing"
+                
+                if current_status == 'QA Testing':
+                    continue # Skip this issue and move to the next
+                else:
+                    has_merged_pr = get_issue_has_merged_pr(issue_id)
+                    if has_merged_pr:  
+                        logger.info(f'Proceeding updating the status to QA Testing as the issue contains a merged PR.')
+                        update_issue_status_to_qa_testing(
+                            owner=config.repository_owner,
+                            project_title=project_title,
+                            item_id=item_id,
+                            status_name=status_name
+                        )
+
+               
             # Update nodes with the filtered list
             nodes = filtered_issues
     
