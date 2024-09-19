@@ -5,9 +5,9 @@ import config
 
 logging.basicConfig(level=logging.DEBUG)  # Ensure logging is set up
 
-def get_repo_issues(owner, repository, status_field_name, after=None, issues=None):
+def get_repo_issues(owner, repository, after=None, issues=None):
     query = """
-    query GetRepoIssues($owner: String!, $repo: String!, $status: String!, $after: String) {
+    query GetRepoClosedIssues($owner: String!, $repo: String!, $after: String) {
           repository(owner: $owner, name: $repo) {
             issues(first: 100, after: $after, states: [OPEN]) {
               nodes {
@@ -28,12 +28,6 @@ def get_repo_issues(owner, repository, status_field_name, after=None, issues=Non
                       number
                       title
                     }
-                    fieldValueByName(name: $status) {
-                      ... on ProjectV2ItemFieldSingleSelectValue {
-                        id
-                        name
-                      }
-                    }
                   }
                 }
               }
@@ -51,7 +45,6 @@ def get_repo_issues(owner, repository, status_field_name, after=None, issues=Non
     variables = {
         'owner': owner,
         'repo': repository,
-        'status': status_field_name,
         'after': after
     }
 
