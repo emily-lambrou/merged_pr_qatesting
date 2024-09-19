@@ -101,7 +101,7 @@ def main():
     # General variables to run only once to get the project_id and status_field_id
     # -----------------------------------------------------------------------------
 
-    project_title = 'Requests Product Backlog'
+    project_title = 'George Test'
     
     project_id = graphql.get_project_id_by_title(
         owner=config.repository_owner, 
