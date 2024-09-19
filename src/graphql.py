@@ -1,5 +1,6 @@
 from pprint import pprint
 import logging
+import logger
 import requests
 import config
 
