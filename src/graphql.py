@@ -1,6 +1,5 @@
 from pprint import pprint
 import logging
-import logger
 import requests
 import config
 
@@ -191,7 +190,7 @@ def get_project_issues(owner, owner_type, project_number, status_field_name, fil
                 else:
                     has_merged_pr = get_issue_has_merged_pr(issue_id)
                     if has_merged_pr:  
-                        logger.info(f'Proceeding updating the status to QA Testing as the issue contains a merged PR.')
+                        logging.error(f'Proceeding updating the status to QA Testing as the issue contains a merged PR.')
                         update_issue_status_to_qa_testing(
                             owner=config.repository_owner,
                             project_title=project_title,
@@ -265,9 +264,6 @@ def get_project_id_by_title(owner, project_title):
     except requests.RequestException as e:
         logging.error(f"Request error: {e}")
         return None
-
-import requests
-import logging
 
 def get_status_field_id(project_id, status_field_name):
     query = """
