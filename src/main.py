@@ -122,10 +122,10 @@ def main():
         status_field_name=config.status_field_name
     )
 
-    logging.error(f"Printing the status_field_id: {status_field_id}.")
+    logging.error(f"Printing the status_field_id: {status_field_id}")
 
     if not status_field_id:
-        logging.error(f"Status field not found in project {project_title}.")
+        logging.error(f"Status field not found in project {project_title}")
         return None
     
     # -----------------------------------------------------------------------------
