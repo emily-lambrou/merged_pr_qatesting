@@ -83,19 +83,18 @@ def notify_change_status():
             continue
             
         project_items = issue.get('projectItems', {}).get('nodes', [])
-        if not project_items:
-
-            logger.info(f'No project items found for issue {issue_id}')
-
-
-            
-            continue
+    
         
         # Check the first project item
         project_item = project_items[0]
-        if not project_item.get('fieldValueByName'):
-            logger.warning(f'Project item does not contain "fieldValueByName": {project_item}')
-            continue
+        current_status = project_item['fieldValueByName'].get('name')
+        
+        logger.info(f'Printing the current status: {current_status}')
+
+        # This is the id of the "QA Testing" status getting it from this line:
+        #  print("Issue object: ", json.dumps(issue, indent=4))
+        
+        status_option_id = "MDM1OlByb2plY3RWMkl0ZW1GaWVsZFNpbmdsZVNlbGVjdFZhbHVlOTY2MTE=" 
 
 
         logger.info('Getting item ID by issue ID...')
@@ -110,16 +109,8 @@ def notify_change_status():
         if not item_id:
             logging.error(f"Item id not found in project {project_title}.")
             return None
-            
-        current_status = project_item['fieldValueByName'].get('name')
-        
-        logger.info(f'Printing the current status: {current_status}')
 
-
-        # This is the id of the "QA Testing" status getting it from this line:
-        #  print("Issue object: ", json.dumps(issue, indent=4))
         
-        status_option_id = "MDM1OlByb2plY3RWMkl0ZW1GaWVsZFNpbmdsZVNlbGVjdFZhbHVlOTY2MTE=" 
         
         # Check if the current status is "QA Testing"
         if current_status == 'QA Testing':
