@@ -231,8 +231,6 @@ def get_project_id_by_title(owner, project_title):
                 return project['id']
         return None
 
-       
-
     except requests.RequestException as e:
         logging.error(f"Request error: {e}")
         return None
@@ -418,29 +416,14 @@ def get_issue_has_merged_pr(issue_id):
         logging.error(f"Request error: {e}")
         return False
 
-def update_issue_status_to_qa_testing(owner, project_title, item_id, status_name):
-    project_id = get_project_id_by_title(owner, project_title)
-    if not project_id:
-        logging.error(f"Project {project_title} not found.")
-        return None
-
-    status_field_id = get_status_field_id(project_id, config.status_field_name)
-    if not status_field_id:
-        logging.error(f"Status field not found in project {project_title}.")
-        return None
-
-    item_id = get_item_id_by_issue_id(project_id, issue_id)  
-    if not item_id:
-        logging.error(f"Item id not found in project {project_title}.")
-        return None
-
+def update_issue_status_to_qa_testing(owner, project_title, project_id, status_field_id, item_id, status_option_id):
     mutation = """
-    mutation UpdateIssueStatus($projectId: ID!, $itemId: ID!, $statusFieldId: ID!, $statusName: String!) {
+    mutation UpdateIssueStatus($projectId: ID!, $itemId: ID!, $statusFieldId: ID!, $statusOptionId: ID!) {
         updateProjectV2ItemFieldValue(input: {
             projectId: $projectId,
             itemId: $itemId,
             fieldId: $statusFieldId,
-            value: { singleSelectOptionId: $statusName }
+            value: { singleSelectOptionId: $statusOptionId }
         }) {
             projectV2Item {
                 id
@@ -452,7 +435,7 @@ def update_issue_status_to_qa_testing(owner, project_title, item_id, status_name
         'projectId': project_id,
         'itemId': item_id,
         'statusFieldId': status_field_id,
-        'statusName': status_name
+        'statusOptionId': status_option_id
     }
 
     try:
@@ -465,7 +448,7 @@ def update_issue_status_to_qa_testing(owner, project_title, item_id, status_name
         if 'errors' in data:
             logging.error(f"GraphQL mutation errors: {data['errors']}")
             return None
-        logging.info(f"Updated issue status to '{status_name}' for item ID: {item_id}")
+        logging.info(f"Updated issue status to '{status_option_id}' for item ID: {item_id}")
         return data.get('data')
     except requests.RequestException as e:
         logging.error(f"Request error: {e}")
