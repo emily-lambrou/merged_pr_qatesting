@@ -84,6 +84,11 @@ def notify_change_status():
             
         project_items = issue.get('projectItems', {}).get('nodes', [])
         if not project_items:
+
+            logger.info(f'No project items found for issue {issue_id}')
+
+
+            
             continue
         
         # Check the first project item
@@ -91,18 +96,6 @@ def notify_change_status():
         if not project_item.get('fieldValueByName'):
             logger.warning(f'Project item does not contain "fieldValueByName": {project_item}')
             continue
-
-        print("--------------")
-              
-        status_field_id = graphql.get_status_field_id(
-            project_id=project_id,
-            status_field_name=config.status_field_name
-        )
-    
-        logger.info(f"Printing the status_field_id INSIDE the issues: {status_field_id}")
-
-        
-        print("--------------")
 
 
         logger.info('Getting item ID by issue ID...')
