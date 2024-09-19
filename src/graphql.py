@@ -390,20 +390,27 @@ def get_issue_has_merged_pr(issue_id):
 
             data = response.json()
 
+            # Error handling for GraphQL errors
             if 'errors' in data:
                 logging.error(f"GraphQL query errors: {data['errors']}")
-                break
+                return False
 
+            # Navigate to the timeline items in the response
             timeline_data = data.get('data', {}).get('node', {}).get('timelineItems', {})
+            if not timeline_data:
+                logging.warning(f"No timeline items found for issue ID: {issue_id}")
+                return False
+
             timeline_items = timeline_data.get('nodes', [])
 
             # Check each timeline item for a merged pull request
             for item in timeline_items:
                 if item['__typename'] == 'CrossReferencedEvent':
-                    pr = item.get('source', {})
-                    if pr.get('mergedAt'):
+                    pr = item.get('source')
+                    if pr and isinstance(pr, dict) and pr.get('mergedAt'):
                         return True  # A merged pull request was found
 
+            # Check for pagination
             pageinfo = timeline_data.get('pageInfo', {})
             if not pageinfo.get('hasNextPage'):
                 break
@@ -417,6 +424,7 @@ def get_issue_has_merged_pr(issue_id):
     except requests.RequestException as e:
         logging.error(f"Request error: {e}")
         return False
+
 
 
 def update_issue_status_to_qa_testing(owner, project_title, project_id, status_field_id, item_id, status_option_id):
