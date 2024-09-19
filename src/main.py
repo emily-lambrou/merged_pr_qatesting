@@ -92,6 +92,9 @@ def notify_change_status():
             logger.warning(f'Project item does not contain "fieldValueByName": {project_item}')
             continue
 
+
+        logger.info("Getting item ID by issue ID...")
+        
         item_id = graphql.get_item_id_by_issue_id(
             project_id=project_id,
             issue_id=issue_id
