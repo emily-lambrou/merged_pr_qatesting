@@ -92,22 +92,22 @@ def notify_change_status():
             logger.warning(f'Project item does not contain "fieldValueByName": {project_item}')
             continue
 
-
-        logger.info(f"Getting item ID by issue ID...")
+        logger.info('Getting item ID by issue ID...')
 
         item_id = graphql.get_item_id_by_issue_id(
             project_id=project_id,
             issue_id=issue_id
         )
 
-       logger.info(f"Printing the item id: {item_id}")
+        logger.info(f'Printing the item id: {item_id}')
         
         if not item_id:
             logging.error(f"Item id not found in project {project_title}.")
             return None
             
         current_status = project_item['fieldValueByName'].get('name')
-        logger.info(f"Printing the current status: {current_status}")
+        
+        logger.info(f'Printing the current status: {current_status}')
 
 
         # This is the id of the "QA Testing" status getting it from this line:
