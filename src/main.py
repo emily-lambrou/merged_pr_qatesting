@@ -81,9 +81,7 @@ def notify_change_status(project_id,status_field_id):
         if current_status == 'QA Testing':
             continue # Skip this issue and move to the next since it is already in QA Testing, no need to update
         else:
-            
             if not config.dry_run: # if True then enable the functionality to update the status
-                
                 # Check if the PR is merged from the issue timelines
                 has_merged_pr = graphql.get_issue_has_merged_pr(issue_id)
                 if has_merged_pr:  
