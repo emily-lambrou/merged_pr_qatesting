@@ -102,10 +102,13 @@ def notify_change_status():
         if not item_id:
             logging.error(f"Item id not found in project {project_title}.")
             return None
-
-        status_name = "QA Testing"
             
         current_status = project_item['fieldValueByName'].get('name')
+
+        # This is the id of the "QA Testing" status getting it from this line:
+        #  print("Issue object: ", json.dumps(issue, indent=4))
+        
+        status_option_id = "MDU6SXNzdWUyNTU0NQ==" 
         
         # Check if the current status is "QA Testing"
         if current_status == 'QA Testing':
@@ -122,7 +125,7 @@ def notify_change_status():
                         project_id=project_id,
                         status_field_id=status_field_id,
                         item_id=item_id,
-                        status_name=status_name
+                        status_option_id=status_option_id
                     )
                 
 def main():
