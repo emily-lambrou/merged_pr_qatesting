@@ -94,7 +94,7 @@ def notify_change_status():
 
         print("--------------")
               
-         status_field_id = graphql.get_status_field_id(
+        status_field_id = graphql.get_status_field_id(
             project_id=project_id,
             status_field_name=config.status_field_name
         )
