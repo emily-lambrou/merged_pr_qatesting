@@ -18,13 +18,9 @@ inputs:
     description: "The Project Title"
     required: true
   status_field_name:
-    description: "The field name for the status"
+    description: "The field name of the status"
     required: true
     default: 'Status'
-  notification_type:
-    description: "The type of notification (comment,email)"
-    required: true
-    default: 'comment'
   enterprise_github:
     description: "Determines if the GitHub is the enterprise ot not (True,False)"
     required: false
