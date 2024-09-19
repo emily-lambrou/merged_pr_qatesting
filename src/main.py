@@ -53,6 +53,8 @@ def notify_change_status(project_id,status_field_id):
             continue
             
         project_items = issue.get('projectItems', {}).get('nodes', [])
+        if not project_items:
+            continue
         
         # Check the first project item
         project_item = project_items[0]
