@@ -119,6 +119,8 @@ def notify_change_status():
                     graphql.update_issue_status_to_qa_testing(
                         owner=config.repository_owner,
                         project_title=project_title,
+                        project_id=project_id,
+                        status_field_id=status_field_id,
                         item_id=item_id,
                         status_name=status_name
                     )
