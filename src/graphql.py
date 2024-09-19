@@ -328,14 +328,16 @@ def get_item_id_by_issue_id(project_id, issue_id):
         )
         
         data = response.json()
-        project_items = data['data']['node']['items']['nodes']
+        project_items = data.get('data', {}).get('node', {}).get('items', {}).get('nodes', [])
         
-        # Find the project-specific `item_id` that matches the `issue_id`
+        # Iterate over the project items to find the matching `issue_id`
         for item in project_items:
-            if item['content'] and item['content']['id'] == issue_id:
+            # Check if 'content' exists and is an Issue with an 'id'
+            if item.get('content') and item['content'].get('id') == issue_id:
                 return item['id']
+        
+        # If no matching issue_id is found, return None
         return None
-
         
     except requests.RequestException as e:
         logging.error(f"Request error: {e}")
