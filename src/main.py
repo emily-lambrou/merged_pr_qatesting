@@ -51,12 +51,6 @@ def notify_change_status(project_id,status_field_id):
         if not issue_id:
             logger.warning(f'Issue content does not contain "id": {issue_content}')
             continue
-
-        # Get the project item from issue
-        project_items = issue.get('projectItems', {}).get('nodes', [])
-        if not project_items:
-            logger.warning(f'No project items found for issue {issue_id}')
-            continue
         
         # Check the first project item
         project_item = project_items[0]
@@ -68,6 +62,8 @@ def notify_change_status(project_id,status_field_id):
             project_id=project_id,
             issue_id=issue_id
         )
+
+        logger.info(f'Printing the item_id: {item_id}')
         
         if not item_id:
             logging.error(f"Item id not found in project {project_title}.")
@@ -110,6 +106,9 @@ def main():
         owner=config.repository_owner, 
         project_title=project_title
     )
+
+    logger.info(f'Printing the project_id: {project_id}')
+
     
     if not project_id:
         logging.error(f"Project {project_title} not found.")
@@ -119,6 +118,9 @@ def main():
         project_id=project_id,
         status_field_name=config.status_field_name
     )
+
+    logging.error(f"Printing the status_field_id: {status_field_id}.")
+
     
     if not status_field_id:
         logging.error(f"Status field not found in project {project_title}.")
