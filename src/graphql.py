@@ -83,48 +83,48 @@ def get_repo_issues(owner, repository, after=None, issues=None):
 
 def get_project_issues(owner, owner_type, project_number, status_field_name, filters=None, after=None, issues=None):
     query = f"""
-    query GetProjectIssues($owner: String!, $projectNumber: Int!, $status: String!, $after: String) {{
-        {owner_type}(login: $owner) {{
+    query GetProjectIssues($owner: String!, $projectNumber: Int!, $status: String!, $after: String)  {{
+          {owner_type}(login: $owner) {{
             projectV2(number: $projectNumber) {{
-                id
-                title
-                number
-                items(first: 100, after: $after) {{
-                    nodes {{
-                        id
-                        fieldValueByName(name: $status) {{
-                            ... on ProjectV2ItemFieldSingleSelectValue {{
-                                id
-                                name
-                            }}
-                        }}
-                        content {{
-                            ... on Issue {{
-                                id
-                                title
-                                number
-                                state
-                                url
-                                assignees(first: 20) {{
-                                    nodes {{
-                                        name
-                                        email
-                                        login
-                                    }}
-                                }}
-                            }}
-                        }}
+              id
+              title
+              number
+              items(first: 100,after: $after) {{
+                nodes {{
+                  id
+                  fieldValueByName(name: $status) {{
+                    ... on ProjectV2ItemFieldSingleSelectValue {{
+                      id
+                      name
                     }}
-                    pageInfo {{
-                        endCursor
-                        hasNextPage
-                        hasPreviousPage
+                  }}
+                  content {{
+                    ... on Issue {{
+                      id
+                      title
+                      number
+                      state
+                      url
+                      assignees(first:20) {{
+                        nodes {{
+                          name
+                          email
+                          login
+                        }}
+                      }}
                     }}
-                    totalCount
+                  }}
                 }}
+                pageInfo {{
+                endCursor
+                hasNextPage
+                hasPreviousPage
+              }}
+              totalCount
+              }}
             }}
+          }}
         }}
-    }}
     """
 
     variables = {
@@ -155,7 +155,7 @@ def get_project_issues(owner, owner_type, project_number, status_field_name, fil
     
         if issues is None:
             issues = []
-    
+
         if filters:
             filtered_issues = []
             for node in nodes:
@@ -166,20 +166,15 @@ def get_project_issues(owner, owner_type, project_number, status_field_name, fil
                 issue_id = issue_content.get('id')
                 if not issue_id:
                     continue
-
-                # Safely get the fieldValueByName and current status
-                field_value = node.get('fieldValueByName')
-                current_status = field_value.get('name') if field_value else None
-       
-                # Apply the 'open_only' filter if specified
-                if filters.get('open_only') and issue_content.get('state') != 'OPEN':
+                
+                if filters.get('open_only') and node['content'].get('state') != 'OPEN':
                     logging.debug(f"Filtering out issue ID {issue_id} with state {issue_content.get('state')}")
                     continue
-               
-            # Update nodes with the filtered list
+                
+                filtered_issues.append(node)
+    
             nodes = filtered_issues
     
-        # Append filtered nodes to issues
         issues = issues + nodes
     
         if pageinfo.get('hasNextPage'):
