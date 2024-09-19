@@ -100,14 +100,14 @@ def notify_change_status():
             issue_id=issue_id
         )
 
-       print(f'Printing the item_id: {item_id}')
+       print(f"Printing the item_id: {item_id}")
         
         if not item_id:
             logging.error(f"Item id not found in project {project_title}.")
             return None
             
         current_status = project_item['fieldValueByName'].get('name')
-        print(f'Printing the current_status: {current_status}')
+        print(f"Printing the current_status: {current_status}")
 
 
         # This is the id of the "QA Testing" status getting it from this line:
