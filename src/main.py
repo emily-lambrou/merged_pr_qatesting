@@ -80,7 +80,7 @@ def notify_change_status():
             continue
 
         # Print the issue object for debugging
-        print("Issue object: ", json.dumps(issue, indent=4))
+        # print("Issue object: ", json.dumps(issue, indent=4))
 
         # Ensure the issue contains content
         issue_content = issue.get('content', {})
@@ -97,9 +97,10 @@ def notify_change_status():
         # Safely get the fieldValueByName and current status
         field_value = issue.get('fieldValueByName')
         current_status = field_value.get('name') if field_value else None
-        logger.info(f'The current status of this issue is: {current_status}')
+        logger.info(f'The current status of #{issue_number} issue is: {current_status}')
         
         issue_title = issue.get('title')
+        issue_number = issue.get('number')
 
         if current_status == 'QA Testing':
             continue
@@ -115,7 +116,7 @@ def notify_change_status():
                     if item.get('content') and item['content'].get('id') == issue_id:
                         item_id = item['id']
                         
-                        logger.info(f'item id = {item_id}')
+                        # logger.info(f'item id = {item_id}')
 
                         item_found = True
                         
@@ -134,9 +135,9 @@ def notify_change_status():
                         )
         
                         if update_result:
-                            logger.info(f'Successfully updated issue {issue_id} to QA Testing.')
+                            logger.info(f'Successfully updated issue #{issue_number} to QA Testing.')
                         else:
-                            logger.error(f'Failed to update issue {issue_id}.')
+                            logger.error(f'Failed to update issue #{issue_number}.')
                         break  # Break out of the loop once updated
 
                 if not item_found:
