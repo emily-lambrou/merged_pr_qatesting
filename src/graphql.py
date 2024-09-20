@@ -430,6 +430,10 @@ def get_item_id_by_issue_id(project_id, issue_id):
         logging.error(f"Request error: {e}")
         return None
 
+import logging
+import requests
+import config
+
 def get_qatesting_status_option_id(owner, owner_type, project_number):
     query = f"""
     query GetStatusOptions($owner: String!, $projectNumber: Int!) {{
@@ -471,18 +475,21 @@ def get_qatesting_status_option_id(owner, owner_type, project_number):
             return None
         
         status_option_id = None
-        
         owner_data = data.get('data', {}).get(owner_type, {})
         project_data = owner_data.get('projectV2', {})
         
         for field in project_data.get('fields', {}).get('nodes', []):
             # We are only interested in fields of type SingleSelect
             if field.get('name') == 'Status':
+                logging.info(f"Found 'Status' field: {field.get('id')}")
                 for option in field.get('options', []):
                     if option['name'] == 'QA Testing':
                         status_option_id = option['id']
+                        logging.info(f"Found 'QA Testing' option ID: {status_option_id}")
+                        return status_option_id
 
-        return status_option_id
+        logging.warning("Could not find 'QA Testing' in 'Status' field.")
+        return None
 
     except requests.RequestException as e:
         logging.error(f"Request error: {e}")
