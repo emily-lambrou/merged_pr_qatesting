@@ -28,7 +28,7 @@ def notify_change_status():
         return
 
     #----------------------------------------------------------------------------------------
-    # Get the project_id and status_field_id: 
+    # Get the project_id, status_field_id and status_option_id 
     #----------------------------------------------------------------------------------------
 
     project_title = 'George Test'
@@ -38,7 +38,7 @@ def notify_change_status():
         project_title=project_title
     )
 
-    logger.info(f'Printing the project_id: {project_id}')
+    # logger.info(f'Printing the project_id: {project_id}')
 
     if not project_id:
         logging.error(f"Project {project_title} not found.")
@@ -49,11 +49,19 @@ def notify_change_status():
         status_field_name=config.status_field_name
     )
 
-    logger.info(f"Printing the status_field_id: {status_field_id}")
+    # logger.info(f"Printing the status_field_id: {status_field_id}")
 
     if not status_field_id:
         logging.error(f"Status field not found in project {project_title}")
         return None
+
+    status_option_id = graphql.get_qatesting_status_option_id(
+            owner=config.repository_owner, 
+            owner_type=config.repository_owner_type,
+            project_number=config.project_number
+    )
+
+    logger.info(f"QA Testing Status Option ID: {status_option_id}")
 
     #----------------------------------------------------------------------------------------
 
@@ -94,14 +102,6 @@ def notify_change_status():
         
         issue_title = issue.get('title')
 
-        status_option_id = graphql.get_qatesting_status_option_id(
-            owner=config.repository_owner, 
-            owner_type=config.repository_owner_type,
-            project_number=config.project_number
-        )
-           
-        print("QA Testing Status Option ID:", status_option_id)
-
         if current_status == 'QA Testing':
             continue
         else:
@@ -115,19 +115,23 @@ def notify_change_status():
                 for item in items:
                     if item.get('content') and item['content'].get('id') == issue_id:
                         item_id = item['id']
+                        
+                        logger.info(f'item id = {item_id}')
+
                         item_found = True
                         
                         # Proceed to update the status
 
-                        encoded_option_id = base64.b64encode(status_option_id.encode()).decode('utf-8')
-                        print("encoded option id: ", encoded_option_id)
+                        # encoded_option_id = base64.b64encode(status_option_id.encode()).decode('utf-8')
+                        # print("encoded option id: ", encoded_option_id)
+                        
                         update_result = graphql.update_issue_status_to_qa_testing(
                             owner=config.repository_owner,
                             project_title=project_title,
                             project_id=project_id,
                             status_field_id=status_field_id,
                             item_id=item_id,
-                            status_option_id='OGUzZDczNjM='
+                            status_option_id=status_option_id
                         )
         
                         if update_result:
