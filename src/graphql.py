@@ -430,7 +430,7 @@ def get_item_id_by_issue_id(project_id, issue_id):
         logging.error(f"Request error: {e}")
         return None
 
-def get_status_option_ids(owner, owner_type, project_number):
+def get_qatesting_status_option_ids(owner, owner_type, project_number):
     query = f"""
     query GetStatusOptions($owner: String!, $projectNumber: Int!) {{
         {owner_type}(login: $owner) {{
@@ -468,11 +468,9 @@ def get_status_option_ids(owner, owner_type, project_number):
 
         if 'errors' in data:
             logging.error(f"GraphQL query errors: {data['errors']}")
-            return None, None
+            return None
         
-        # Retrieve status options
-        status_options = {}
-        qa_testing_option_id = None
+        status_option_id = None
         
         owner_data = data.get('data', {}).get(owner_type, {})
         project_data = owner_data.get('projectV2', {})
@@ -481,15 +479,14 @@ def get_status_option_ids(owner, owner_type, project_number):
             # We are only interested in fields of type SingleSelect
             if field.get('name') == 'Status':
                 for option in field.get('options', []):
-                    status_options[option['name']] = option['id']
                     if option['name'] == 'QA Testing':
-                        qa_testing_option_id = option['id']
+                        status_option_id = option['id']
 
-        return status_options, qa_testing_option_id
+        return status_option_id
 
     except requests.RequestException as e:
         logging.error(f"Request error: {e}")
-        return None, None
+        return None
 
 
 def get_issue_has_merged_pr(issue_id):
