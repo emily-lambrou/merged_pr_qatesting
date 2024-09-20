@@ -56,9 +56,8 @@ def notify_change_status():
         return None
 
     status_option_id = graphql.get_qatesting_status_option_id(
-            owner=config.repository_owner, 
-            owner_type=config.repository_owner_type,
-            project_number=config.project_number
+        project_id=project_id,
+        status_field_name=config.status_field_name
     )
 
     logger.info(f"QA Testing Status Option ID: {status_option_id}")
