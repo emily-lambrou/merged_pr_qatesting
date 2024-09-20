@@ -117,14 +117,16 @@ def notify_change_status():
                         item_found = True
                         
                         # Proceed to update the status
-                
+
+                        encoded_option_id = base64.b64encode(status_option_id.encode()).decode('utf-8')
+                        print("encoded option id: ", encoded_option_id)
                         update_result = graphql.update_issue_status_to_qa_testing(
                             owner=config.repository_owner,
                             project_title=project_title,
                             project_id=project_id,
                             status_field_id=status_field_id,
                             item_id=item_id,
-                            status_option_id=status_option_id
+                            status_option_id=encoded_option_id
                         )
         
                         if update_result:
