@@ -485,7 +485,9 @@ def get_qatesting_status_option_id(project_id, status_field_name):
                 # Look for the specific option "QA Testing"
                 for option in field.get('options', []):
                     if option['name'] == "QA Testing":
-                        return option['id']
+                        option_id = option['id']
+                        logging.info(f"QA Testing Status Option ID: {option_id}")  # Log the ID for confirmation
+                        return option_id
         
         logging.warning(f"Status 'QA Testing' not found.")
         return None
