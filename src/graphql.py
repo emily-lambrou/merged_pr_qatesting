@@ -430,35 +430,30 @@ def get_item_id_by_issue_id(project_id, issue_id):
         logging.error(f"Request error: {e}")
         return None
 
-import logging
-import requests
-import config
-
-def get_qatesting_status_option_id(owner, owner_type, project_number):
-    query = f"""
-    query GetStatusOptions($owner: String!, $projectNumber: Int!) {{
-        {owner_type}(login: $owner) {{
-            projectV2(number: $projectNumber) {{
-                fields(first: 100) {{
-                    nodes {{
-                        ... on ProjectV2SingleSelectField {{
-                            id
-                            name
-                            options {{
-                                id
-                                name
-                            }}
-                        }}
-                    }}
-                }}
-            }}
-        }}
-    }}
+def get_qa_testing_status_id(project_id, status_field_name):
+    query = """
+    query($projectId: ID!) {
+      node(id: $projectId) {
+        ... on ProjectV2 {
+          fields(first: 100) {
+            nodes {
+              __typename
+              ... on ProjectV2SingleSelectField {
+                id
+                name
+                options {
+                  id
+                  name
+                }
+              }
+            }
+          }
+        }
+      }
+    }
     """
-
     variables = {
-        'owner': owner,
-        'projectNumber': project_number
+        'projectId': project_id
     }
 
     try:
@@ -467,28 +462,33 @@ def get_qatesting_status_option_id(owner, owner_type, project_number):
             json={"query": query, "variables": variables},
             headers={"Authorization": f"Bearer {config.gh_token}"}
         )
-
+        
         data = response.json()
 
+        # Check for errors in the response
         if 'errors' in data:
             logging.error(f"GraphQL query errors: {data['errors']}")
             return None
         
-        status_option_id = None
-        owner_data = data.get('data', {}).get(owner_type, {})
-        project_data = owner_data.get('projectV2', {})
+        # Ensure 'data' is in the response and is valid
+        if 'data' not in data or 'node' not in data['data'] or 'fields' not in data['data']['node']:
+            logging.error(f"Unexpected response structure: {data}")
+            return None
         
-        for field in project_data.get('fields', {}).get('nodes', []):
-            # We are only interested in fields of type SingleSelect
-            if field.get('name') == 'Status':
-                logging.info(f"Found 'Status' field: {field.get('id')}")
-                for option in field.get('options', []):
-                    if option['name'] == 'QA Testing':
-                        status_option_id = option['id']
-                        logging.info(f"Found 'QA Testing' option ID: {status_option_id}")
-                        return status_option_id
+        # Log the response for debugging
+        logging.debug(f"GraphQL response: {data}")
 
-        logging.warning("Could not find 'QA Testing' in 'Status' field.")
+        # Get fields from the response
+        fields = data['data']['node']['fields']['nodes']
+        for field in fields:
+            if field.get('name') == status_field_name and field['__typename'] == 'ProjectV2SingleSelectField':
+                # Look for the specific option "QA Testing"
+                for option in field.get('options', []):
+                    if option['name'] == "QA Testing":
+                        status_option_id = option['id']
+                        return status_option_id
+        
+        logging.warning(f"Status 'QA Testing' not found.")
         return None
 
     except requests.RequestException as e:
