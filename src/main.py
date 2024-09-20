@@ -4,6 +4,7 @@ import json
 import requests
 import config
 import graphql
+import base64
 
 def notify_change_status():
     # Fetch issues based on whether it's an enterprise or not
