@@ -430,7 +430,7 @@ def get_item_id_by_issue_id(project_id, issue_id):
         logging.error(f"Request error: {e}")
         return None
 
-def get_qatesting_status_option_ids(owner, owner_type, project_number):
+def get_qatesting_status_option_id(owner, owner_type, project_number):
     query = f"""
     query GetStatusOptions($owner: String!, $projectNumber: Int!) {{
         {owner_type}(login: $owner) {{
