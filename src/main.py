@@ -72,7 +72,7 @@ def notify_change_status():
 
     qatesting_id = "8e3d7363"
     encoded_id = encode_to_base64(qatesting_id)
-    print('f"Base64 Encoded ID for QA Testing: {encoded_id}")
+    print(f"Base64 Encoded ID for QA Testing: {encoded_id}")
           
     logger.info(f"QA Testing Status Option ID: {status_option_id}")
 
