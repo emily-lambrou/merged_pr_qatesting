@@ -49,7 +49,7 @@ def notify_change_status():
         status_field_name=config.status_field_name
     )
 
-    logger.info(f"Printing the status_field_id: {status_field_id}")
+    # logger.info(f"Printing the status_field_id: {status_field_id}")
 
     if not status_field_id:
         logging.error(f"Status field not found in project {project_title}")
@@ -81,7 +81,7 @@ def notify_change_status():
             continue
 
         # Print the issue object for debugging
-        # print("Issue object: ", json.dumps(issue, indent=4))
+        print("Issue object: ", json.dumps(issue, indent=4))
 
         # Ensure the issue contains content
         issue_content = issue.get('content', {})
