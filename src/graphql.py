@@ -435,13 +435,11 @@ def get_status_option_ids(owner, owner_type, project_number):
     query GetStatusOptions($owner: String!, $projectNumber: Int!) {{
         {owner_type}(login: $owner) {{
             projectV2(number: $projectNumber) {{
-                id
-                fields(first: 10) {{
+                fields(first: 100) {{
                     nodes {{
-                        id
-                        name
-                        type
-                        ... on ProjectV2FieldSingleSelect {{
+                        ... on ProjectV2SingleSelectField {{
+                            id
+                            name
                             options {{
                                 id
                                 name
@@ -480,7 +478,8 @@ def get_status_option_ids(owner, owner_type, project_number):
         project_data = owner_data.get('projectV2', {})
         
         for field in project_data.get('fields', {}).get('nodes', []):
-            if field.get('type') == 'single_select':
+            # We are only interested in fields of type SingleSelect
+            if field.get('name') == 'Status':
                 for option in field.get('options', []):
                     status_options[option['name']] = option['id']
                     if option['name'] == 'QA Testing':
@@ -491,7 +490,6 @@ def get_status_option_ids(owner, owner_type, project_number):
     except requests.RequestException as e:
         logging.error(f"Request error: {e}")
         return None, None
-
 
 
 def get_issue_has_merged_pr(issue_id):
