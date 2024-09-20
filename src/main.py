@@ -48,6 +48,8 @@ def notify_change_status():
         status_field_name=config.status_field_name
     )
 
+    logging.info(f"Status Field ID: {status_field_id} (Type: {type(status_field_id)})")
+
     # logger.info(f"Printing the status_field_id: {status_field_id}")
 
     if not status_field_id:
@@ -60,6 +62,8 @@ def notify_change_status():
     )
 
     logger.info(f"QA Testing Status Option ID: {status_option_id}")
+    logging.info(f"Status Option ID: {status_option_id} (Type: {type(status_option_id)})")
+
 
     #----------------------------------------------------------------------------------------
 
