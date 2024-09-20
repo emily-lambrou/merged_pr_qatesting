@@ -97,7 +97,7 @@ def notify_change_status():
         # Safely get the fieldValueByName and current status
         field_value = issue.get('fieldValueByName')
         current_status = field_value.get('name') if field_value else None
-        logger.info(f'The current status of {issue_title} is: {current_status}')
+        logger.info(f'The current status of {issue_id} is: {current_status}')
         
         issue_title = issue.get('title')
         issue_number = issue.get('number')
