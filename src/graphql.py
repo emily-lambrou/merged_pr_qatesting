@@ -430,7 +430,7 @@ def get_item_id_by_issue_id(project_id, issue_id):
         logging.error(f"Request error: {e}")
         return None
 
-def get_qa_testing_status_id(project_id, status_field_name):
+def get_qatesting_status_option_id(project_id, status_field_name):
     query = """
     query($projectId: ID!) {
       node(id: $projectId) {
@@ -485,8 +485,7 @@ def get_qa_testing_status_id(project_id, status_field_name):
                 # Look for the specific option "QA Testing"
                 for option in field.get('options', []):
                     if option['name'] == "QA Testing":
-                        status_option_id = option['id']
-                        return status_option_id
+                        return option['id']
         
         logging.warning(f"Status 'QA Testing' not found.")
         return None
