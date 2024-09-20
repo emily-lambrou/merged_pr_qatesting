@@ -97,7 +97,7 @@ def notify_change_status():
         # Safely get the fieldValueByName and current status
         field_value = issue.get('fieldValueByName')
         current_status = field_value.get('name') if field_value else None
-        logger.info(f'The current status of #{issue_number} issue is: {current_status}')
+        logger.info(f'The current status of {issue_title} is: {current_status}')
         
         issue_title = issue.get('title')
         issue_number = issue.get('number')
@@ -106,7 +106,7 @@ def notify_change_status():
             continue
         else:
             has_merged_pr = graphql.get_issue_has_merged_pr(issue_id)
-            logger.info(f'The issue #{issue_number} has merged PR? : {has_merged_pr}')
+            logger.info(f'The issue {issue_title} has merged PR? : {has_merged_pr}')
             if has_merged_pr:  
                 logger.info(f'Proceeding to update the status to QA Testing as it contains a merged PR.')
 
@@ -135,9 +135,9 @@ def notify_change_status():
                         )
         
                         if update_result:
-                            logger.info(f'Successfully updated issue #{issue_number} to QA Testing.')
+                            logger.info(f'Successfully updated issue {issue_id} to QA Testing.')
                         else:
-                            logger.error(f'Failed to update issue #{issue_number}.')
+                            logger.error(f'Failed to update issue {issue_id}.')
                         break  # Break out of the loop once updated
 
                 if not item_found:
