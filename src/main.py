@@ -4,7 +4,6 @@ import json
 import requests
 import config
 import graphql
-import base64
 
 def notify_change_status():
     # Fetch issues based on whether it's an enterprise or not
@@ -106,7 +105,7 @@ def notify_change_status():
             continue
         else:
             has_merged_pr = graphql.get_issue_has_merged_pr(issue_id)
-            logger.info(f'The issue {issue_title} has merged PR? : {has_merged_pr}')
+            logger.info(f'The issue {issue_id} has merged PR? : {has_merged_pr}')
             if has_merged_pr:  
                 logger.info(f'Proceeding to update the status to QA Testing as it contains a merged PR.')
 
@@ -122,9 +121,6 @@ def notify_change_status():
                         
                         # Proceed to update the status
 
-                        # encoded_option_id = base64.b64encode(status_option_id.encode()).decode('utf-8')
-                        # print("encoded option id: ", encoded_option_id)
-                        
                         update_result = graphql.update_issue_status_to_qa_testing(
                             owner=config.repository_owner,
                             project_title=project_title,
