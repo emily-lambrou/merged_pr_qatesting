@@ -4,6 +4,17 @@ import json
 import requests
 import config
 import graphql
+import base64
+
+
+def encode_to_base64(value):
+    # Convert the string to bytes
+    value_bytes = value.encode('utf-8')
+    # Encode the bytes to Base64
+    base64_bytes = base64.b64encode(value_bytes)
+    # Convert the Base64 bytes back to a string
+    base64_string = base64_bytes.decode('utf-8')
+    return base64_string
 
 def notify_change_status():
     # Fetch issues based on whether it's an enterprise or not
@@ -48,8 +59,6 @@ def notify_change_status():
         status_field_name=config.status_field_name
     )
 
-    logging.info(f"Status Field ID: {status_field_id} (Type: {type(status_field_id)})")
-
     # logger.info(f"Printing the status_field_id: {status_field_id}")
 
     if not status_field_id:
@@ -61,9 +70,11 @@ def notify_change_status():
         status_field_name=config.status_field_name
     )
 
+    qatesting_id = "8e3d7363"
+    encoded_id = encode_to_base64(qatesting_id)
+    print('f"Base64 Encoded ID for QA Testing: {encoded_id}")
+          
     logger.info(f"QA Testing Status Option ID: {status_option_id}")
-    logging.info(f"Status Option ID: {status_option_id} (Type: {type(status_option_id)})")
-
 
     #----------------------------------------------------------------------------------------
 
@@ -131,7 +142,7 @@ def notify_change_status():
                             project_id=project_id,
                             status_field_id=status_field_id,
                             item_id=item_id,
-                            status_option_id=status_option_id
+                            status_option_id=encoded_id
                         )
         
                         if update_result:
