@@ -106,7 +106,7 @@ def notify_change_status():
             continue
         else:
             has_merged_pr = graphql.get_issue_has_merged_pr(issue_id)
-            logger.info(f'This issue has merged PR? : {has_merged_pr}')
+            logger.info(f'The issue #{issue_number} has merged PR? : {has_merged_pr}')
             if has_merged_pr:  
                 logger.info(f'Proceeding to update the status to QA Testing as it contains a merged PR.')
 
