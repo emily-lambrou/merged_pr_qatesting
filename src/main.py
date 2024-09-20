@@ -127,7 +127,7 @@ def notify_change_status():
                             project_id=project_id,
                             status_field_id=status_field_id,
                             item_id=item_id,
-                            status_option_id=encoded_option_id
+                            status_option_id='OGUzZDczNjM='
                         )
         
                         if update_result:
