@@ -93,6 +93,14 @@ def notify_change_status():
         
         issue_title = issue.get('title')
 
+        option_ids = graphq.get_status_option_ids(
+             owner=config.repository_owner, 
+            owner_type=config.repository_owner_type,
+            project_number=config.project_number
+        )
+
+        logger.info(f"Getting the options ids for the status: {option_ids}")
+
         if current_status == 'QA Testing':
             continue
         else:
