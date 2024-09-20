@@ -430,6 +430,69 @@ def get_item_id_by_issue_id(project_id, issue_id):
         logging.error(f"Request error: {e}")
         return None
 
+def get_status_option_ids(owner, owner_type, project_number):
+    query = f"""
+    query GetStatusOptions($owner: String!, $projectNumber: Int!) {{
+        {owner_type}(login: $owner) {{
+            projectV2(number: $projectNumber) {{
+                id
+                fields(first: 10) {{
+                    nodes {{
+                        id
+                        name
+                        type
+                        ... on ProjectV2FieldSingleSelect {{
+                            options {{
+                                id
+                                name
+                            }}
+                        }}
+                    }}
+                }}
+            }}
+        }}
+    }}
+    """
+
+    variables = {
+        'owner': owner,
+        'projectNumber': project_number
+    }
+
+    try:
+        response = requests.post(
+            config.api_endpoint,
+            json={"query": query, "variables": variables},
+            headers={"Authorization": f"Bearer {config.gh_token}"}
+        )
+
+        data = response.json()
+
+        if 'errors' in data:
+            logging.error(f"GraphQL query errors: {data['errors']}")
+            return None, None
+        
+        # Retrieve status options
+        status_options = {}
+        qa_testing_option_id = None
+        
+        owner_data = data.get('data', {}).get(owner_type, {})
+        project_data = owner_data.get('projectV2', {})
+        
+        for field in project_data.get('fields', {}).get('nodes', []):
+            if field.get('type') == 'single_select':
+                for option in field.get('options', []):
+                    status_options[option['name']] = option['id']
+                    if option['name'] == 'QA Testing':
+                        qa_testing_option_id = option['id']
+
+        return status_options, qa_testing_option_id
+
+    except requests.RequestException as e:
+        logging.error(f"Request error: {e}")
+        return None, None
+
+
 
 def get_issue_has_merged_pr(issue_id):
     query = """
