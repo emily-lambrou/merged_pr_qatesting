@@ -582,11 +582,13 @@ def get_issue_has_merged_pr(issue_id):
 def update_issue_status_to_qa_testing(owner, project_title, project_id, status_field_id, item_id, status_option_id):
     mutation = """
     mutation UpdateIssueStatus($projectId: ID!, $itemId: ID!, $statusFieldId: ID!, $statusOptionId: ID!) {
-        updateProjectV2ItemFieldValue(input: {
+        updateProjectV2SingleSelectFieldValue(input: {
             projectId: $projectId,
             itemId: $itemId,
             fieldId: $statusFieldId,
-            value: $statusOptionId
+            value: {
+                singleSelectOptionId: $statusOptionId  
+            }
         }) {
             projectV2Item {
                 id
