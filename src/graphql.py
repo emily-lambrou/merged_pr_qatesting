@@ -581,8 +581,8 @@ def get_issue_has_merged_pr(issue_id):
 
 def update_issue_status_to_qa_testing(owner, project_title, project_id, status_field_id, item_id, status_option_id):
     mutation = """
-    mutation UpdateIssueStatus($projectId: ID!, $itemId: ID!, $statusFieldId: ID!, $statusOptionId: ID!) {
-        updateProjectV2SingleSelectFieldValue(input: {
+    mutation UpdateIssueStatus($projectId: ID!, $itemId: ID!, $statusFieldId: ID!, $statusOptionId: String!) {
+        updateProjectV2ItemFieldValue(input: {
             projectId: $projectId,
             itemId: $itemId,
             fieldId: $statusFieldId,
@@ -596,11 +596,12 @@ def update_issue_status_to_qa_testing(owner, project_title, project_id, status_f
         }
     }
     """
+    
     variables = {
-        'projectId': project_id,
-        'itemId': item_id,
-        'statusFieldId': status_field_id,
-        'statusOptionId': status_option_id
+        'projectId': project_id,   
+        'itemId': item_id,         
+        'statusFieldId': status_field_id, 
+        'statusOptionId': status_option_id  
     }
 
     try:
@@ -609,14 +610,16 @@ def update_issue_status_to_qa_testing(owner, project_title, project_id, status_f
             json={"query": mutation, "variables": variables},
             headers={"Authorization": f"Bearer {config.gh_token}"}
         )
+        
         data = response.json()
         if 'errors' in data:
             logging.error(f"GraphQL mutation errors: {data['errors']}")
             return None
+        
         logging.info(f"Updated issue status to '{status_option_id}' for item ID: {item_id}")
         return data.get('data')
+
     except requests.RequestException as e:
         logging.error(f"Request error: {e}")
         return None
-
 
