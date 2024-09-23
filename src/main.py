@@ -59,9 +59,6 @@ def notify_change_status():
         status_field_name=config.status_field_name
     )
 
-          
-    # logger.info(f"QA Testing Status Option ID: {status_option_id}")
-
     #----------------------------------------------------------------------------------------
 
     items = graphql.get_project_items(
