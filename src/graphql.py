@@ -496,7 +496,6 @@ def get_qatesting_status_option_id(project_id, status_field_name):
         logging.error(f"Request error: {e}")
         return None
 
-
 def get_issue_has_merged_pr(issue_id):
     query = """
     query GetIssueTimeline($issueId: ID!, $afterCursor: String) {
@@ -579,6 +578,7 @@ def get_issue_has_merged_pr(issue_id):
         logging.error(f"Request error: {e}")
         return False
 
+
 def update_issue_status_to_qa_testing(owner, project_title, project_id, status_field_id, item_id, status_option_id):
     mutation = """
     mutation UpdateIssueStatus($projectId: ID!, $itemId: ID!, $statusFieldId: ID!, $statusOptionId: ID!) {
@@ -598,7 +598,7 @@ def update_issue_status_to_qa_testing(owner, project_title, project_id, status_f
         'projectId': project_id,
         'itemId': item_id,
         'statusFieldId': status_field_id,
-        'statusOptionId': status_option_id
+        'statusOptionId': str(status_option_id)
     }
 
     try:
