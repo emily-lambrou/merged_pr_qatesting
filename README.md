@@ -8,8 +8,6 @@ GitHub Action aims to address this by allowing you to update the project status 
 This GitHub Action allows you to manage status changes for issues in a central GitHub project. It integrates with a custom
 text field (status) that you can add to your GitHub project board. 
 
-///...
-
 ### Prerequisites
 
 Before you can start using this GitHub Action, you'll need to ensure you have the following:
