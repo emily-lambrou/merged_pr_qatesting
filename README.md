@@ -16,7 +16,7 @@ Before you can start using this GitHub Action, you'll need to ensure you have th
 
 1. A GitHub repository where you want to enable this action.
 2. A GitHub project board with a custom status field added.
-3. A Token (Classic) with permissions to repo:*, read:user, user:email, read:project
+3. A Token (Classic) with permissions to repo:*, read:user, user:email, project:*
 
 ### Inputs
 
