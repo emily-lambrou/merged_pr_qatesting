@@ -70,9 +70,9 @@ def notify_change_status():
         status_field_name=config.status_field_name
     )
 
-    qatesting_id = "8e3d7363"
-    encoded_id = encode_to_base64(qatesting_id)
-    print(f"Base64 Encoded ID for QA Testing: {encoded_id}")
+    # qatesting_id = "8e3d7363"
+    # encoded_id = encode_to_base64(qatesting_id)
+    # print(f"Base64 Encoded ID for QA Testing: {encoded_id}")
           
     logger.info(f"QA Testing Status Option ID: {status_option_id}")
 
@@ -142,7 +142,7 @@ def notify_change_status():
                             project_id=project_id,
                             status_field_id=status_field_id,
                             item_id=item_id,
-                            status_option_id=encoded_id
+                            status_option_id=status_option_id
                         )
         
                         if update_result:
