@@ -586,7 +586,7 @@ def update_issue_status_to_qa_testing(owner, project_title, project_id, status_f
             projectId: $projectId,
             itemId: $itemId,
             fieldId: $statusFieldId,
-            value: { singleSelectOptionId: $statusOptionId }
+            value: $statusOptionId
         }) {
             projectV2Item {
                 id
@@ -598,7 +598,7 @@ def update_issue_status_to_qa_testing(owner, project_title, project_id, status_f
         'projectId': project_id,
         'itemId': item_id,
         'statusFieldId': status_field_id,
-        'statusOptionId': str(status_option_id)
+        'statusOptionId': status_option_id
     }
 
     try:
