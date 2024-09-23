@@ -132,7 +132,7 @@ def notify_change_status():
                         )
         
                         if update_result:
-                            logger.info(f'Successfully updated issue {issue_id} to QA Testing.')
+                            logger.info(f'Successfully updated issue to QA Testing.')
                         else:
                             logger.error(f'Failed to update issue {issue_id}.')
                         break  # Break out of the loop once updated
