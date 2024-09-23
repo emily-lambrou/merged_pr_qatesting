@@ -4,17 +4,6 @@ import json
 import requests
 import config
 import graphql
-import base64
-
-
-def encode_to_base64(value):
-    # Convert the string to bytes
-    value_bytes = value.encode('utf-8')
-    # Encode the bytes to Base64
-    base64_bytes = base64.b64encode(value_bytes)
-    # Convert the Base64 bytes back to a string
-    base64_string = base64_bytes.decode('utf-8')
-    return base64_string
 
 def notify_change_status():
     # Fetch issues based on whether it's an enterprise or not
@@ -70,11 +59,8 @@ def notify_change_status():
         status_field_name=config.status_field_name
     )
 
-    # qatesting_id = "8e3d7363"
-    # encoded_id = encode_to_base64(qatesting_id)
-    # print(f"Base64 Encoded ID for QA Testing: {encoded_id}")
           
-    logger.info(f"QA Testing Status Option ID: {status_option_id}")
+    # logger.info(f"QA Testing Status Option ID: {status_option_id}")
 
     #----------------------------------------------------------------------------------------
 
@@ -111,7 +97,7 @@ def notify_change_status():
         # Safely get the fieldValueByName and current status
         field_value = issue.get('fieldValueByName')
         current_status = field_value.get('name') if field_value else None
-        logger.info(f'The current status of {issue_id} is: {current_status}')
+        # logger.info(f'The current status of {issue_id} is: {current_status}')
         
         issue_title = issue.get('title')
         issue_number = issue.get('number')
@@ -120,9 +106,9 @@ def notify_change_status():
             continue
         else:
             has_merged_pr = graphql.get_issue_has_merged_pr(issue_id)
-            logger.info(f'The issue {issue_id} has merged PR? : {has_merged_pr}')
+            # logger.info(f'The issue {issue_id} has merged PR? : {has_merged_pr}')
             if has_merged_pr:  
-                logger.info(f'Proceeding to update the status to QA Testing as it contains a merged PR.')
+                logger.info(f'Proceeding to update the status for {issue_id} to QA Testing as it contains a merged PR.')
 
                 # Find the item id for the issue
                 item_found = False
