@@ -107,17 +107,21 @@ def notify_change_status():
         comment_text = "This issue is ready for testing. Please proceed accordingly."
 
         if current_status == 'QA Testing':
+            logger.info(f'Proceeding to the next issue as the status is already QA Testing')
             continue # skip the issue 
 
         if check_comment_exists(issue_id, comment_text):
             continue # skip the issue if it was in QA Testing before (the comment already exists)
+            logger.info(f'Proceeding to the next issue as the QA Testing comment already exists in this issue')
             
-        issue_title = issue.get('title', 'Unknown Title')
+        issue_title = issue.get('title')
 
         has_merged_pr = graphql.get_issue_has_merged_pr(issue_id)
         if has_merged_pr:  
-            logger.info(f'Proceeding to update the status of {issue_title} to QA Testing as it contains a merged PR.')
             
+            logger.info(f'Proceeding to update the status to QA Testing as it contains a merged PR.')
+            print("Issue object: ", json.dumps(issue, indent=4))
+
             # Find the item id for the issue
             item_found = False
             for item in items:
@@ -138,7 +142,7 @@ def notify_change_status():
                     )
     
                     if update_result:
-                        logger.info(f'Successfully updated issue "{issue_title}" to QA Testing.')
+                        logger.info(f'Successfully updated issue {issue_id} to QA Testing.')
                     else:
                         logger.error(f'Failed to update issue {issue_id}.')
                     break  # Break out of the loop once updated
@@ -157,7 +161,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
-        
