@@ -621,3 +621,65 @@ def update_issue_status_to_qa_testing(owner, project_title, project_id, status_f
         logging.error(f"Request error: {e}")
         return None
 
+
+def get_issue_comments(issue_id):
+    query = """
+    query GetIssueComments($issueId: ID!, $afterCursor: String) {
+        node(id: $issueId) {
+            ... on Issue {
+                comments(first: 100, after: $afterCursor) {
+                    nodes {
+                        body
+                        createdAt
+                        author {
+                            login
+                        }
+                    }
+                    pageInfo {
+                        endCursor
+                        hasNextPage
+                    }
+                }
+            }
+        }
+    }
+    """
+
+    variables = {
+        'issueId': issue_id,
+        'afterCursor': None
+    }
+
+    all_comments = []
+
+    try:
+        while True:
+            response = requests.post(
+                config.api_endpoint,
+                json={"query": query, "variables": variables},
+                headers={"Authorization": f"Bearer {config.gh_token}"}
+            )
+
+            data = response.json()
+
+            if 'errors' in data:
+                logging.error(f"GraphQL query errors: {data['errors']}")
+                break
+
+            comments_data = data.get('data', {}).get('node', {}).get('comments', {})
+            comments = comments_data.get('nodes', [])
+            all_comments.extend(comments)
+
+            pageinfo = comments_data.get('pageInfo', {})
+            if not pageinfo.get('hasNextPage'):
+                break
+
+            # Set the cursor for the next page
+            variables['afterCursor'] = pageinfo.get('endCursor')
+
+        return all_comments
+
+    except requests.RequestException as e:
+        logging.error(f"Request error: {e}")
+        return []
+
