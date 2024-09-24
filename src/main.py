@@ -102,19 +102,17 @@ def notify_change_status():
         if current_status == 'QA Testing':
             continue
         else:
+            issue_title = issue.get('title')
             has_merged_pr = graphql.get_issue_has_merged_pr(issue_id)
-            # logger.info(f'The issue {issue_id} has merged PR? : {has_merged_pr}')
             if has_merged_pr:  
-                logger.info(f'Proceeding to update the status to QA Testing as it contains a merged PR.')
-
+                logger.info(f'Proceeding to update the status of "{issue_title}" to QA Testing as it contains a merged PR.')
+                
                 # Find the item id for the issue
                 item_found = False
                 for item in items:
                     if item.get('content') and item['content'].get('id') == issue_id:
                         item_id = item['id']
                         
-                        # logger.info(f'item id = {item_id}')
-
                         item_found = True
                         
                         # Proceed to update the status
@@ -129,7 +127,7 @@ def notify_change_status():
                         )
         
                         if update_result:
-                            logger.info(f'Successfully updated issue to QA Testing.')
+                            logger.info(f'Successfully updated issue "{issue_title}" to QA Testing.')
                         else:
                             logger.error(f'Failed to update issue {issue_id}.')
                         break  # Break out of the loop once updated
