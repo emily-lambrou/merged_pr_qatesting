@@ -615,8 +615,6 @@ def update_issue_status_to_qa_testing(owner, project_title, project_id, status_f
         if 'errors' in data:
             logging.error(f"GraphQL mutation errors: {data['errors']}")
             return None
-        
-        logging.info(f"Updated issue status to QA Testing")
         return data.get('data')
 
     except requests.RequestException as e:
