@@ -106,49 +106,46 @@ def notify_change_status():
 
         comment_text = "This issue is ready for testing. Please proceed accordingly."
 
-        if current_status == 'QA Testing' or check_comment_exists(issue_id, comment_text):
-            issue_number = issue.get('number')
+        if current_status == 'QA Testing':
+            continue # skip the issue 
 
-            logger.info(f"the comment already exists in #{issue_number}")
+        if check_comment_exists(issue_id, comment_text):
+            continue # skip the issue if it was in QA Testing before (the comment already exists)
             
-            continue # skip the issue if the status is QA Testing or if was QA Testing before (the comment already exists)
-        else:
+        issue_title = issue.get('title', 'Unknown Title')
+
+        has_merged_pr = graphql.get_issue_has_merged_pr(issue_id)
+        if has_merged_pr:  
+            logger.info(f'Proceeding to update the status of {issue_title} to QA Testing as it contains a merged PR.')
             
-            issue_title = issue.get('title', 'Unknown Title')
-            issue_number = issue.get('number')
+            # Find the item id for the issue
+            item_found = False
+            for item in items:
+                if item.get('content') and item['content'].get('id') == issue_id:
+                    item_id = item['id']
+                    
+                    item_found = True
+                    
+                    # Proceed to update the status
 
-            has_merged_pr = graphql.get_issue_has_merged_pr(issue_id)
-            if has_merged_pr:  
-                logger.info(f'Proceeding to update the status of #{issue_number} to QA Testing as it contains a merged PR.')
-                
-                # Find the item id for the issue
-                item_found = False
-                for item in items:
-                    if item.get('content') and item['content'].get('id') == issue_id:
-                        item_id = item['id']
-                        
-                        item_found = True
-                        
-                        # Proceed to update the status
+                    update_result = graphql.update_issue_status_to_qa_testing(
+                        owner=config.repository_owner,
+                        project_title=project_title,
+                        project_id=project_id,
+                        status_field_id=status_field_id,
+                        item_id=item_id,
+                        status_option_id=status_option_id
+                    )
+    
+                    if update_result:
+                        logger.info(f'Successfully updated issue "{issue_title}" to QA Testing.')
+                    else:
+                        logger.error(f'Failed to update issue {issue_id}.')
+                    break  # Break out of the loop once updated
 
-                        update_result = graphql.update_issue_status_to_qa_testing(
-                            owner=config.repository_owner,
-                            project_title=project_title,
-                            project_id=project_id,
-                            status_field_id=status_field_id,
-                            item_id=item_id,
-                            status_option_id=status_option_id
-                        )
-        
-                        if update_result:
-                            logger.info(f'Successfully updated issue "{issue_title}" to QA Testing.')
-                        else:
-                            logger.error(f'Failed to update issue {issue_id}.')
-                        break  # Break out of the loop once updated
-
-                if not item_found:
-                    logger.warning(f'No matching item found for issue ID: {issue_id}.')
-                    continue #  Skip the issue as it cannot be updated
+            if not item_found:
+                logger.warning(f'No matching item found for issue ID: {issue_id}.')
+                continue #  Skip the issue as it cannot be updated
 
                 
 def main():
