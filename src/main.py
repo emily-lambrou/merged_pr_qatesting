@@ -107,6 +107,10 @@ def notify_change_status():
         comment_text = "This issue is ready for testing. Please proceed accordingly."
 
         if current_status == 'QA Testing' or check_comment_exists(issue_id, comment_text):
+            issue_number = issue.get('number')
+
+            logger.info(f"the comment already exists in #{issue_number}")
+            
             continue # skip the issue if the status is QA Testing or if was QA Testing before (the comment already exists)
         else:
             
