@@ -5,6 +5,14 @@ import requests
 import config
 import graphql
 
+def check_comment_exists(issue_id, comment_text):
+    """Check if the comment already exists on the issue."""
+    comments = graphql.get_issue_comments(issue_id)
+    for comment in comments:
+        if comment_text in comment.get('body', ''):
+            return True
+    return False
+
 def notify_change_status():
     # Fetch issues based on whether it's an enterprise or not
     if config.is_enterprise:
@@ -95,17 +103,19 @@ def notify_change_status():
         field_value = issue.get('fieldValueByName')
         current_status = field_value.get('name') if field_value else None
         # logger.info(f'The current status of {issue_id} is: {current_status}')
-        
-        issue_title = issue.get('title')
-        issue_number = issue.get('number')
 
-        if current_status == 'QA Testing':
-            continue
+        comment_text = "This issue is ready for testing. Please proceed accordingly."
+
+        if current_status == 'QA Testing' or check_comment_exists(issue_id, comment_text):
+            continue # skip the issue if the status is QA Testing or if was QA Testing before (the comment already exists)
         else:
-            issue_title = issue.get('title')
+            
+            issue_title = issue.get('title', 'Unknown Title')
+            issue_number = issue.get('number')
+
             has_merged_pr = graphql.get_issue_has_merged_pr(issue_id)
             if has_merged_pr:  
-                logger.info(f'Proceeding to update the status of "{issue_title}" to QA Testing as it contains a merged PR.')
+                logger.info(f'Proceeding to update the status of #{issue_number} to QA Testing as it contains a merged PR.')
                 
                 # Find the item id for the issue
                 item_found = False
