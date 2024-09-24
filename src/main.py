@@ -30,7 +30,7 @@ def notify_change_status():
     # Get the project_id, status_field_id and status_option_id 
     #----------------------------------------------------------------------------------------
 
-    project_title = 'Requests Product Backlog'
+    project_title = 'George-Test'
     
     project_id = graphql.get_project_id_by_title(
         owner=config.repository_owner, 
