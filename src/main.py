@@ -38,8 +38,8 @@ def notify_change_status():
     # Get the project_id, status_field_id and status_option_id 
     #----------------------------------------------------------------------------------------
 
-    # project_title = 'Test'
-    project_title = 'Requests Product Backlog'
+    project_title = 'Test'
+    # project_title = 'Requests Product Backlog'
     
     project_id = graphql.get_project_id_by_title(
         owner=config.repository_owner, 
@@ -118,8 +118,9 @@ def notify_change_status():
         has_merged_pr = graphql.get_issue_has_merged_pr(issue_id)
         if has_merged_pr:  
             
-            logger.info(f'Proceeding to update the status to QA Testing as it contains a merged PR.')
             print("Issue object: ", json.dumps(issue, indent=4))
+
+            logger.info(f'Proceeding to update the status to QA Testing as it contains a merged PR.')
 
             # Find the item id for the issue
             item_found = False
