@@ -38,7 +38,6 @@ def notify_change_status():
     # Get the project_id, status_field_id and status_option_id 
     #----------------------------------------------------------------------------------------
 
-    # project_title = 'Test'
     project_title = 'Requests Product Backlog'
     
     project_id = graphql.get_project_id_by_title(
