@@ -29,7 +29,14 @@ Before you can start using this GitHub Action, you'll need to ensure you have th
 | `dry_run` _(optional)_               | `True` if you want to enable dry-run mode. Default is `False`                                    |
 
 
-### Example
+### Examples
+
+#### Status changes to "QA Testing" if PR is merged in the issue
+
+To update the status of an issue to QA Testing, you'll need to create a GitHub Actions workflow in your repository. Below is
+an example of a workflow YAML file:
+
+```yaml
 
 name: Update status field to QA Testing if PR is merged
 
@@ -62,3 +69,5 @@ jobs:
           project_title: 'George Test'
           enterprise_github: 'True'
           repository_owner_type: 'organization'
+       
+```
