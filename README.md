@@ -13,8 +13,9 @@ text field (status) that you can add to your GitHub project board.
 Before you can start using this GitHub Action, you'll need to ensure you have the following:
 
 1. A GitHub repository where you want to enable this action.
-2. A GitHub project board with a custom status field added.
-3. A Token (Classic) with permissions to repo:*, write: org, read: org, read:user, user:email, project. 
+2. A GitHub project board (name: Requests Product Backlog) with a custom status field added.
+3. A "QA Testing" status option added in the Status field.
+4. A Token (Classic) with permissions to repo:*, write: org, read: org, read:user, user:email, project. 
 
 ### Inputs
 
