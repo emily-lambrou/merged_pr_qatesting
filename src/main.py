@@ -104,7 +104,7 @@ def notify_change_status():
         current_status = field_value.get('name') if field_value else None
         # logger.info(f'The current status of {issue_id} is: {current_status}')
 
-        comment_text = "This issue is ready for testing. Please proceed accordingly."
+        comment_text = "This issue is ready for testing. Please proceed accordingly in 15 minutes."
 
         if current_status == 'QA Testing':
             continue # skip the issue 
